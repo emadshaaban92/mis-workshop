@@ -7,10 +7,13 @@ import * as types from '../constants/ActionTypes';
 
 
 import {RadioButton, RadioButtonGroup} from 'material-ui/RadioButton';
+import RaisedButton from 'material-ui/RaisedButton';
 
-const renderChoice = (choice, i) => {
+
+const renderChoice = (disabled, choice, i) => {
   return (
     <RadioButton
+      disabled={disabled}
       key={i}
       value={String(i)}
       label={choice}
@@ -18,39 +21,53 @@ const renderChoice = (choice, i) => {
   )
 }
 
+const createOrUpdateAnswer = (question, dispatch, answer, value) => {
+  if(answer === undefined){
+    dispatch({
+      type : types.INSERT_ANSWER,
+      answer : {
+        _id : uuid.v1(),
+        question_id : question._id,
+        user : "z3bola",
+        type : "answer",
+        value,
+        submited : false
+      }
+    });
+  }else {
+    dispatch({
+      type : types.UPDATE_ANSWER,
+      answer : {
+        ...answer,
+        value
+      }
+    });
+  }
+}
+
 const Question = ({question, dispatch, answer}) => {
   return (
     <div>
       <h1>{question.title}</h1>
       <h3>{question.text}</h3>
-      <RadioButtonGroup name="choices" defaultSelected={answer && answer.value} onChange={(e, value) => {
-        let ans = {
-          value,
-          question_id : question._id,
-          user : "z3bola",
-          type : "answer"
-        }
-        if(answer === undefined){
-          dispatch({
-            type : types.INSERT_ANSWER,
-            answer : {
-              _id : uuid.v1(),
-              ...ans
-            }
-          });
-        }else {
+      <RadioButtonGroup name="choices"
+        defaultSelected={answer && answer.value}
+        onChange={(e, value) => {
+          createOrUpdateAnswer(question, dispatch, answer, value);
+        }}>
+        {question.choices.map(renderChoice.bind(null, answer && answer.submited))}
+      </RadioButtonGroup>
+      <RaisedButton label="Submit" primary={true} disabled={answer===undefined || answer.submited}
+        onClick={()=>{
           dispatch({
             type : types.UPDATE_ANSWER,
             answer : {
-              _id : answer._id,
-              _rev : answer._rev,
-              ...ans
+              ...answer,
+              submited : true
             }
           });
-        }
-      }}>
-        {question.choices.map(renderChoice)}
-      </RadioButtonGroup>
+        }}/>
+
     </div>
   )
 }
