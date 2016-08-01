@@ -28,7 +28,7 @@ const createOrUpdateAnswer = (question, dispatch, answer, value) => {
       answer : {
         _id : uuid.v1(),
         question_id : question._id,
-        user : "z3bola",
+        user : localStorage.getItem("username"),
         type : "answer",
         value,
         submited : false

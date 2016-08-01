@@ -3,9 +3,10 @@ import ReactDOM from 'react-dom';
 
 import { Provider } from 'react-redux'
 
-import AppStore from './store';
-import Container from './containers/container';
 
+import createAppStore from './store';
+import Container from './containers/container';
+import Login from './login';
 
 
 import injectTapEventPlugin from 'react-tap-event-plugin';
@@ -17,14 +18,34 @@ injectTapEventPlugin();
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 
 
+const loggedIn = localStorage.getItem('loggedIn');
+if(loggedIn){
+  let user = {
+    username : localStorage.getItem('username'),
+    password : localStorage.getItem('password'),
+    dbName : localStorage.getItem('dbName')
+  }
+  var AppStore = createAppStore(user);
+}
+
+
 const App = ()=>{
+  if(loggedIn){
+    return (
+      <Provider store={AppStore}>
+        <MuiThemeProvider>
+          <Container />
+        </MuiThemeProvider>
+      </Provider>
+    );
+  }
+
   return (
-    <Provider store={AppStore}>
-      <MuiThemeProvider>
-        <Container />
-      </MuiThemeProvider>
-    </Provider>
-  );
+    <MuiThemeProvider>
+      <Login />
+    </MuiThemeProvider>
+  )
+
 }
 
 
