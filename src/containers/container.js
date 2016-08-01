@@ -42,12 +42,22 @@ const Container = React.createClass({
             this.props.dispatch({
               type : types.NAVIGATE_TO,
               route : {
+                name : routeNames.QUIZES
+              }
+            });
+            this.toggleDrawer();
+          }}>Quizes</MenuItem>
+
+          <MenuItem onTouchTap={()=>{
+            this.props.dispatch({
+              type : types.NAVIGATE_TO,
+              route : {
                 name : routeNames.QUESTIONS
               }
             });
             this.toggleDrawer();
           }}>Questions</MenuItem>
-          <MenuItem>Menu Item 2</MenuItem>
+
         </Drawer>
         <Router />
       </div>

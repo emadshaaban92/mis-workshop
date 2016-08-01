@@ -29,6 +29,19 @@ function answers(state=[], action){
   }
 }
 
+function quizes(state=[], action){
+  switch (action.type) {
+    case types.INSERT_QUIZ:
+      return [action.quiz, ...state]
+    case types.UPDATE_QUIZ:
+      return [action.quiz, ...(state.filter((q)=> { return q._id != action.quiz._id}))];
+    case types.REMOVE_QUIZ:
+      return state.filter((q)=> { return q._id != action.id})
+    default:
+      return state
+  }
+}
+
 function history(state=[{name : routeNames.HOME}], action){
   switch (action.type) {
     case types.NAVIGATE_TO:
@@ -45,5 +58,6 @@ function history(state=[{name : routeNames.HOME}], action){
 export default combineReducers({
   questions,
   answers,
+  quizes,
   history
 });

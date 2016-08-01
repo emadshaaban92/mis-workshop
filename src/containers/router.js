@@ -8,6 +8,9 @@ import Home from './home';
 import Questions from './questions';
 import Question from './question_view';
 
+import Quizes from './quizes';
+import Quiz from './quiz_view';
+
 
 const Router = ({route}) => {
   switch (route.name) {
@@ -17,6 +20,10 @@ const Router = ({route}) => {
       return <Questions />;
     case routeNames.VIEW_QUESTION :
       return <Question {...route.params} />;
+    case routeNames.QUIZES :
+      return <Quizes />;
+    case routeNames.VIEW_QUIZ :
+      return <Quiz {...route.params} />;
     default:
       return (
         <div>

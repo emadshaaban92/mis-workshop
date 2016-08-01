@@ -53,6 +53,26 @@ function createAppStore(user){
       changeFilter : (doc) => {
         return doc.type === "answer";
       }
+  }, {
+      path: '/quizes',
+      db: localDB,
+      actions: {
+          remove: doc => AppStore.dispatch({
+              type: types.REMOVE_QUIZ,
+              id: doc._id
+          }),
+          insert: doc => AppStore.dispatch({
+              type: types.INSERT_QUIZ,
+              quiz: doc
+          }),
+          update: doc => AppStore.dispatch({
+              type: types.UPDATE_QUIZ,
+              quiz: doc
+          }),
+      },
+      changeFilter : (doc) => {
+        return doc.type === "quiz";
+      }
   }]);
 
   const createStoreWithMiddleware = applyMiddleware(pouchMiddleware)(createStore);
