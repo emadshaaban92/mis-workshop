@@ -6,6 +6,7 @@ import * as routeNames from '../constants/routeNames';
 
 import Home from './home';
 import Questions from './questions';
+import Question from './question_view';
 
 
 const Router = ({route}) => {
@@ -14,6 +15,8 @@ const Router = ({route}) => {
       return <Home />;
     case routeNames.QUESTIONS :
       return <Questions />;
+    case routeNames.VIEW_QUESTION :
+      return <Question {...route.params} />;
     default:
       return (
         <div>

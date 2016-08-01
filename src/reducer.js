@@ -18,11 +18,11 @@ function questions(state=[], action){
 
 function answers(state=[], action){
   switch (action.type) {
-    case types.INSERT_ANSWERR:
+    case types.INSERT_ANSWER:
       return [action.answer, ...state]
-    case types.UPDATE_ANSWERR:
+    case types.UPDATE_ANSWER:
       return [action.answer, ...(state.filter((q)=> { return q._id != action.answer._id}))];
-    case types.REMOVE_ANSWERR:
+    case types.REMOVE_ANSWER:
       return state.filter((q)=> { return q._id != action.id})
     default:
       return state
