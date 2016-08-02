@@ -7,6 +7,7 @@ import * as routeNames from '../constants/routeNames';
 import Home from './home';
 import Questions from './questions';
 import Question from './question_view';
+import AddQuestion from './add_question';
 
 import Quizes from './quizes';
 import Quiz from './quiz_view';
@@ -28,6 +29,8 @@ const Router = ({route}) => {
       return <Quiz {...route.params} />;
     case routeNames.LIVE_QUIZ :
       return <LiveQuiz />;
+    case routeNames.ADD_QUESTION :
+      return <AddQuestion />;
     default:
       return (
         <div>

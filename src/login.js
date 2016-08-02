@@ -4,7 +4,7 @@ import RaisedButton from 'material-ui/RaisedButton';
 
 const authUser = (username, password) =>{
   const dbName = 'mis-' + username;
-  const url = "http://couch.bizzotech.com:5984/" + dbName;
+  const url = "http://couch.bizzotech.com:5984/_users/org.couchdb.user:" + username;
   return fetch(url, {
     headers: {
      'Authorization': 'Basic '+btoa(username + ":" + password)
@@ -15,9 +15,13 @@ const authUser = (username, password) =>{
       localStorage.setItem('username', username);
       localStorage.setItem('password', password);
       localStorage.setItem('dbName', dbName);
-      location.reload();
+
+      return respnonse.json();
     }
-  })
+  }).then(function(resp){
+    localStorage.setItem('auther', resp.auther)
+    location.reload();
+  });
 }
 
 
