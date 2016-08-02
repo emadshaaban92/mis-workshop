@@ -3,6 +3,7 @@ export const HOME = 'HOME';
 export const QUESTIONS = 'QUESTIONS';
 export const VIEW_QUESTION = 'VIEW_QUESTION';
 export const ADD_QUESTION = 'ADD_QUESTION';
+export const EDIT_QUESTION = 'EDIT_QUESTION';
 
 
 export const QUIZES = 'QUIZES';

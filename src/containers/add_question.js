@@ -12,8 +12,11 @@ import {RadioButton, RadioButtonGroup} from 'material-ui/RadioButton';
 import TextField from 'material-ui/TextField';
 import RaisedButton from 'material-ui/RaisedButton';
 
-const AddQuestion = React.createClass({
+const AddEditQuestion = React.createClass({
   getInitialState: function() {
+    if(this.props.question){
+      return this.props.question;
+    }
     return {
       title : '',
       text : '',
@@ -21,10 +24,34 @@ const AddQuestion = React.createClass({
       correct_answer : ''
     };
   },
+  componentWillReceiveProps : function(){
+    this.setState(this.props.question);
+  },
+  addQuestion : function(){
+    const question = {
+      ...this.state,
+      _id : uuid.v1(),
+      type : "question"
+    }
+    this.props.dispatch({
+      type : types.INSERT_QUESTION,
+      question
+    });
+    this.props.afterInsert(question);
+  },
+  saveQuestion : function(){
+    const question = {
+      ...this.state,
+    }
+    this.props.dispatch({
+      type : types.UPDATE_QUESTION,
+      question
+    });
+    this.props.afterEdit(question);
+  },
   render : function(){
     return (
       <div>
-        <h1>Add Question</h1>
         <TextField
           floatingLabelText="Title"
           value={this.state.title}
@@ -66,16 +93,11 @@ const AddQuestion = React.createClass({
         <br /><br />
         <RaisedButton label="Save Question" primary={true}
           onClick={()=>{
-            const question = {
-              ...this.state,
-              _id : uuid.v1(),
-              type : "question"
+            if(!this.state._id){
+              this.addQuestion()
+            }else{
+              this.saveQuestion()
             }
-            this.props.dispatch({
-              type : types.INSERT_QUESTION,
-              question
-            });
-            this.props.afterInsert(question);
           }}/>
       </div>
     )
@@ -84,4 +106,8 @@ const AddQuestion = React.createClass({
 
 
 
-export default connect()(AddQuestion);
+export default connect((state, {question})=>{
+  return {
+    question : state.questions.find((q)=> {return q._id == question._id})
+  }
+})(AddEditQuestion);

@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 const uuid = require('node-uuid');
 
 import * as types from '../constants/ActionTypes';
+import * as routeNames from '../constants/routeNames';
 
 
 import {RadioButton, RadioButtonGroup} from 'material-ui/RadioButton';
@@ -68,6 +69,19 @@ const Question = ({question, dispatch, answer}) => {
             }
           });
         }}/>
+      {localStorage.getItem('auther') === "true" ? <RaisedButton label="Edit" primary={true}
+        onClick={()=>{
+          dispatch({
+            type : types.NAVIGATE_TO,
+            route : {
+              name : routeNames.EDIT_QUESTION,
+              params : {
+                question
+              }
+            }
+          });
+        }}/> : null }  
+
 
     </div>
   )
