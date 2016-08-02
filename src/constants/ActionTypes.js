@@ -12,6 +12,10 @@ export const INSERT_QUIZ = 'INSERT_QUIZ';
 export const REMOVE_QUIZ = "REMOVE_QUIZ";
 export const UPDATE_QUIZ = 'UPDATE_QUIZ';
 
+export const INSERT_COURSE = 'INSERT_COURSE';
+export const REMOVE_COURSE = "REMOVE_COURSE";
+export const UPDATE_COURSE = 'UPDATE_COURSE';
+
 
 export const NAVIGATE_TO = 'NAVIGATE_TO';
 export const GO_BACK = 'GO_BACK';

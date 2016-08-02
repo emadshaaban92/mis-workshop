@@ -20,7 +20,7 @@ import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 
 const loggedIn = localStorage.getItem('loggedIn');
 if(loggedIn){
-  let user = {
+  var user = {
     username : localStorage.getItem('username'),
     password : localStorage.getItem('password'),
     dbName : localStorage.getItem('dbName')

@@ -11,7 +11,7 @@ import PouchMiddleware from 'pouch-redux-middleware'
 import AppReducer from './reducer';
 
 function createAppStore(user){
-  const localDB = new PouchDB(user.dbName);
+  const localDB = new PouchDB(user.dbName + "t2");
 
   const pouchMiddleware = PouchMiddleware([{
       path: '/questions',
@@ -72,6 +72,26 @@ function createAppStore(user){
       },
       changeFilter : (doc) => {
         return doc.type === "quiz";
+      }
+  }, {
+      path: '/courses',
+      db: localDB,
+      actions: {
+          remove: doc => AppStore.dispatch({
+              type: types.REMOVE_COURSE,
+              id: doc._id
+          }),
+          insert: doc => AppStore.dispatch({
+              type: types.INSERT_COURSE,
+              course: doc
+          }),
+          update: doc => AppStore.dispatch({
+              type: types.UPDATE_COURSE,
+              course: doc
+          }),
+      },
+      changeFilter : (doc) => {
+        return doc.type === "course";
       }
   }]);
 

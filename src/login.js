@@ -16,11 +16,8 @@ const authUser = (username, password) =>{
       localStorage.setItem('password', password);
       localStorage.setItem('dbName', dbName);
 
-      return respnonse.json();
+      location.reload();
     }
-  }).then(function(resp){
-    localStorage.setItem('auther', resp.auther)
-    location.reload();
   });
 }
 

@@ -22,7 +22,7 @@ const renderQuestion = (question, i) => {
 }
 
 const renderAddIcon = (dispatch) => {
-  if(localStorage.getItem('auther')){
+  if(localStorage.getItem('auther') === "true"){
     return (
       <AddIcon onClick={()=>{
         dispatch({
