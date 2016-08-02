@@ -1,13 +1,14 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 
-
+import * as types from '../constants/ActionTypes';
 import * as routeNames from '../constants/routeNames';
 
 import Home from './home';
 import Questions from './questions';
 import Question from './question_view';
 import AddQuestion from './add_question';
+import AddQuiz from './add_quiz';
 
 import Quizes from './quizes';
 import Quiz from './quiz_view';
@@ -15,7 +16,7 @@ import Quiz from './quiz_view';
 import LiveQuiz from './live_quiz';
 
 
-const Router = ({route}) => {
+const Router = ({route, dispatch}) => {
   switch (route.name) {
     case routeNames.HOME :
       return <Home />;
@@ -30,7 +31,23 @@ const Router = ({route}) => {
     case routeNames.LIVE_QUIZ :
       return <LiveQuiz />;
     case routeNames.ADD_QUESTION :
-      return <AddQuestion />;
+      return <AddQuestion afterInsert={()=>{
+          dispatch({
+            type : types.NAVIGATE_TO,
+            route : {
+              name : routeNames.QUESTIONS
+            }
+          });
+        }} />;
+    case routeNames.ADD_QUIZ :
+      return <AddQuiz afterInsert={()=>{
+          dispatch({
+            type : types.NAVIGATE_TO,
+            route : {
+              name : routeNames.QUIZES
+            }
+          });
+        }} />;
     default:
       return (
         <div>

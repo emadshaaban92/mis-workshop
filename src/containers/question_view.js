@@ -57,6 +57,7 @@ const Question = ({question, dispatch, answer}) => {
         }}>
         {question.choices.map(renderChoice.bind(null, answer && answer.submited))}
       </RadioButtonGroup>
+      <br />
       <RaisedButton label="Submit" primary={true} disabled={answer===undefined || answer.submited}
         onClick={()=>{
           dispatch({

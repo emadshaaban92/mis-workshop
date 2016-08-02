@@ -24,6 +24,7 @@ const AddQuestion = React.createClass({
   render : function(){
     return (
       <div>
+        <h1>Add Question</h1>
         <TextField
           floatingLabelText="Title"
           value={this.state.title}
@@ -74,12 +75,7 @@ const AddQuestion = React.createClass({
               type : types.INSERT_QUESTION,
               question
             });
-            this.props.dispatch({
-              type : types.NAVIGATE_TO,
-              route : {
-                name : routeNames.QUESTIONS
-              }
-            });
+            this.props.afterInsert(question);
           }}/>
       </div>
     )
