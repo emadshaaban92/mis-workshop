@@ -4,6 +4,8 @@ import { connect } from 'react-redux';
 import AppBar from 'material-ui/AppBar';
 import Drawer from 'material-ui/Drawer';
 import MenuItem from 'material-ui/MenuItem';
+import FlatButton from 'material-ui/FlatButton';
+
 
 import * as types from '../constants/ActionTypes'
 import * as routeNames from '../constants/routeNames';
@@ -19,18 +21,24 @@ const Container = React.createClass({
   toggleDrawer : function(){
     this.setState({...this.state, drawerActive : !this.state.drawerActive});
   },
+  resetRoute : function(){
+    this.props.dispatch({
+      type : types.RESET_ROUTE,
+    });
+  },
+  logout : function(){
+    localStorage.clear();
+    location.reload();
+  },
   render : function(){
     return (
       <div>
         <AppBar
           title="MIS Workshop"
           iconClassNameRight="muidocs-icon-navigation-expand-more"
+          iconElementRight={<FlatButton label="Logout" onClick={this.logout} />}
           onLeftIconButtonTouchTap={this.toggleDrawer}
-          onTitleTouchTap={()=>{
-            this.props.dispatch({
-              type : types.RESET_ROUTE,
-            });
-          }}
+          onTitleTouchTap={this.resetRoute}
         />
         <Drawer
           docked={false}
