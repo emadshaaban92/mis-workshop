@@ -25,7 +25,9 @@ const AddEditQuestion = React.createClass({
     };
   },
   componentWillReceiveProps : function(){
-    this.setState(this.props.question);
+    if(this.props.question){
+      this.setState(this.props.question);
+    }
   },
   addQuestion : function(){
     const question = {
@@ -108,6 +110,6 @@ const AddEditQuestion = React.createClass({
 
 export default connect((state, {question})=>{
   return {
-    question : state.questions.find((q)=> {return q._id == question._id})
+    question : question ? state.questions.find((q)=> {return q._id == question._id}) : undefined
   }
 })(AddEditQuestion);

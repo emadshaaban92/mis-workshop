@@ -9,5 +9,6 @@ export const EDIT_QUESTION = 'EDIT_QUESTION';
 export const QUIZES = 'QUIZES';
 export const VIEW_QUIZ = 'VIEW_QUIZ';
 export const ADD_QUIZ = 'ADD_QUIZ';
+export const EDIT_QUIZ = 'EDIT_QUIZ';
 
 export const LIVE_QUIZ = 'LIVE_QUIZ';

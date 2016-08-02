@@ -112,12 +112,62 @@ const AddQuestionModal = React.createClass({
 
 const AddQuiz = React.createClass({
   getInitialState: function() {
+    if(this.props.quiz){
+      return {
+        select_questions_modal : false,
+        add_question_modal : false,
+        _id : this.props.quiz._id,
+        _rev : this.props.quiz._rev,
+        type : "quiz",
+        title : this.props.quiz.title,
+        questions : this.props.quiz.questions
+      }
+    }
     return {
       select_questions_modal : false,
       add_question_modal : false,
       title : '',
       questions : []
     };
+  },
+  componentWillReceiveProps : function(){
+    if(this.props.quiz){
+      this.setState({
+        ...this.state,
+        _id : this.props.quiz._id,
+        _rev : this.props.quiz._rev,
+        type : "quiz",
+        title : this.props.quiz.title,
+        questions : this.props.quiz.questions
+      });
+    }
+  },
+  addQuiz : function(){
+    const quiz = {
+      _id : uuid.v1(),
+      type : "quiz",
+      title : this.state.title,
+      questions : this.state.questions
+    }
+    this.props.dispatch({
+      type : types.INSERT_QUIZ,
+      quiz
+    });
+    this.props.afterInsert(quiz);
+  },
+  saveQuiz : function(){
+    const quiz = {
+      _id : this.state._id,
+      _rev : this.state._rev,
+      type : "quiz",
+      title : this.state.title,
+      questions : this.state.questions
+    }
+    this.props.dispatch({
+      type : types.UPDATE_QUIZ,
+      quiz
+    });
+    this.props.afterEdit(quiz);
   },
   moveUp : function(i){
     if(i > 0){
@@ -182,17 +232,11 @@ const AddQuiz = React.createClass({
         <br /><br />
         <RaisedButton label="Save Quiz" primary={true}
           onClick={()=>{
-            const quiz = {
-              _id : uuid.v1(),
-              type : "quiz",
-              title : this.state.title,
-              questions : this.state.questions
+            if(!this.state._id){
+              this.addQuiz()
+            }else{
+              this.saveQuiz()
             }
-            this.props.dispatch({
-              type : types.INSERT_QUIZ,
-              quiz
-            });
-            this.props.afterInsert(quiz);
           }}/>
 
 
@@ -223,8 +267,9 @@ const AddQuiz = React.createClass({
 
 
 
-export default connect((state)=>{
+export default connect((state, {quiz})=>{
   return {
+    quiz : quiz ? state.quizes.find((q)=> {return q._id == quiz._id}) : undefined,
     questions : state.questions
   }
 })(AddQuiz);

@@ -20,7 +20,7 @@ const SelectCourse = ({courses}) => {
       <Table onCellClick={(rowNumber) => {
         const course = courses[rowNumber];
         localStorage.setItem('selected_course', course.name);
-        localStorage.setItem('auther', course.subscribers.indexOf(localStorage.getItem('username')) != -1);
+        localStorage.setItem('auther', course.authers.indexOf(localStorage.getItem('username')) != -1);
         localStorage.setItem('dbName', "mis-" + course.name + "-" + localStorage.getItem('username'));
         location.reload();
       }}>

@@ -1,6 +1,9 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 
+import * as types from '../constants/ActionTypes';
+import * as routeNames from '../constants/routeNames';
+
 import {
   Step,
   Stepper,
@@ -69,6 +72,19 @@ const Quiz = React.createClass({
             </div>
           </div>
         </div>
+        {localStorage.getItem('auther') === "true" ? <RaisedButton label="Edit" primary={true}
+          onClick={()=>{
+            dispatch({
+              type : types.NAVIGATE_TO,
+              route : {
+                name : routeNames.EDIT_QUIZ,
+                params : {
+                  quiz
+                }
+              }
+            });
+          }}/> : null }
+
       </div>
     )
   }

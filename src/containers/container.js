@@ -36,6 +36,7 @@ const Container = React.createClass({
   },
   selectCourse : function(){
     localStorage.removeItem('selected_course');
+    localStorage.removeItem('auther');
     location.reload();
   },
   renderDrawer : function(){

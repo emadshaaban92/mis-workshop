@@ -8,7 +8,7 @@ import Home from './home';
 import Questions from './questions';
 import Question from './question_view';
 import AddEditQuestion from './add_question';
-import AddQuiz from './add_quiz';
+import AddEditQuiz from './add_quiz';
 
 import Quizes from './quizes';
 import Quiz from './quiz_view';
@@ -36,6 +36,18 @@ const Router = ({route, dispatch}) => {
             }
           });
         }}/>;
+      case routeNames.EDIT_QUIZ :
+        return <AddEditQuiz {...route.params} afterEdit={(quiz)=>{
+            dispatch({
+              type : types.NAVIGATE_TO,
+              route : {
+                name : routeNames.VIEW_QUIZ,
+                params : {
+                  quiz
+                }
+              }
+            });
+          }}/>;
     case routeNames.QUIZES :
       return <Quizes />;
     case routeNames.VIEW_QUIZ :
@@ -52,7 +64,7 @@ const Router = ({route, dispatch}) => {
           });
         }} />;
     case routeNames.ADD_QUIZ :
-      return <AddQuiz afterInsert={()=>{
+      return <AddEditQuiz afterInsert={()=>{
           dispatch({
             type : types.NAVIGATE_TO,
             route : {
