@@ -58,6 +58,16 @@ const Container = React.createClass({
             this.toggleDrawer();
           }}>Questions</MenuItem>
 
+          <MenuItem onTouchTap={()=>{
+            this.props.dispatch({
+              type : types.NAVIGATE_TO,
+              route : {
+                name : routeNames.LIVE_QUIZ
+              }
+            });
+            this.toggleDrawer();
+          }}>Live Quiz</MenuItem>
+
         </Drawer>
         <Router />
       </div>

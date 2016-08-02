@@ -35,7 +35,8 @@ const Quiz = React.createClass({
   },
   renderStep(question, i){
     return (
-      <Step key={i}>
+      <Step key={question._id
+      }>
         <StepLabel>{question.title}</StepLabel>
       </Step>
     )

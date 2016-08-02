@@ -11,6 +11,8 @@ import Question from './question_view';
 import Quizes from './quizes';
 import Quiz from './quiz_view';
 
+import LiveQuiz from './live_quiz';
+
 
 const Router = ({route}) => {
   switch (route.name) {
@@ -24,6 +26,8 @@ const Router = ({route}) => {
       return <Quizes />;
     case routeNames.VIEW_QUIZ :
       return <Quiz {...route.params} />;
+    case routeNames.LIVE_QUIZ :
+      return <LiveQuiz />;
     default:
       return (
         <div>
