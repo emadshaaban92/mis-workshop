@@ -27,7 +27,7 @@ const createOrUpdateAnswer = (question, dispatch, answer, value) => {
     dispatch({
       type : types.INSERT_ANSWER,
       answer : {
-        _id : uuid.v1(),
+        _id : "answer/" + uuid.v1(),
         question_id : question._id,
         user : localStorage.getItem("username"),
         type : "answer",
@@ -46,7 +46,7 @@ const createOrUpdateAnswer = (question, dispatch, answer, value) => {
   }
 }
 
-const Question = ({question, dispatch, answer}) => {
+const Question = ({question, dispatch, answer, answers}) => {
   return (
     <div>
       <h1>{question.title}</h1>
@@ -60,6 +60,7 @@ const Question = ({question, dispatch, answer}) => {
       </RadioButtonGroup>
       <br />
       <RaisedButton label="Submit" primary={true} disabled={answer===undefined || answer.submited}
+        style={{marginRight: 12}}
         onClick={()=>{
           dispatch({
             type : types.UPDATE_ANSWER,
@@ -69,18 +70,22 @@ const Question = ({question, dispatch, answer}) => {
             }
           });
         }}/>
-      {localStorage.getItem('auther') === "true" ? <RaisedButton label="Edit" primary={true}
-        onClick={()=>{
-          dispatch({
-            type : types.NAVIGATE_TO,
-            route : {
-              name : routeNames.EDIT_QUESTION,
-              params : {
-                question
+      {localStorage.getItem('auther') === "true" ? <div>
+        <RaisedButton label="Edit" primary={true}
+          onClick={()=>{
+            dispatch({
+              type : types.NAVIGATE_TO,
+              route : {
+                name : routeNames.EDIT_QUESTION,
+                params : {
+                  question
+                }
               }
-            }
-          });
-        }}/> : null }  
+            });
+          }}/>
+        <h3>{answers.length} Answers</h3>
+
+      </div> : null }
 
 
     </div>
@@ -90,7 +95,10 @@ const Question = ({question, dispatch, answer}) => {
 
 
 export default connect((state, {question}) => {
+  const answers = state.answers.filter((answer) => {return answer.question_id == question._id});
+  const my_answer = answers.find((answer)=>{return answer.user == localStorage.getItem('username')});
   return {
-    answer : state.answers.find((answer) => {return answer.question_id == question._id})
+    answer : my_answer,
+    answers
   }
 })(Question);

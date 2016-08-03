@@ -144,7 +144,7 @@ const AddQuiz = React.createClass({
   },
   addQuiz : function(){
     const quiz = {
-      _id : uuid.v1(),
+      _id : "quiz/" + uuid.v1(),
       type : "quiz",
       title : this.state.title,
       questions : this.state.questions

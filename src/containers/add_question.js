@@ -32,7 +32,7 @@ const AddEditQuestion = React.createClass({
   addQuestion : function(){
     const question = {
       ...this.state,
-      _id : uuid.v1(),
+      _id : "question/" + uuid.v1(),
       type : "question"
     }
     this.props.dispatch({

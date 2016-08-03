@@ -11,7 +11,7 @@ import PouchMiddleware from 'pouch-redux-middleware'
 import AppReducer from './reducer';
 
 function createAppStore(user){
-  const localDB = new PouchDB(user.dbName + "t2");
+  const localDB = new PouchDB(user.dbName + "t3");
 
   const pouchMiddleware = PouchMiddleware([{
       path: '/questions',

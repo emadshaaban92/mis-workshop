@@ -55,8 +55,11 @@ const Quiz = React.createClass({
         </Stepper>
         <div style={contentStyle}>
           <div>
-            <Question question={questions[stepIndex]} />
-            <div style={{marginTop: 12}}>
+            <div style={{display: 'flex', justifyContent: 'center'}}>
+              <Question question={questions[stepIndex]} />
+            </div>
+
+            <div style={{marginTop: 12,display: 'flex', justifyContent: 'flex-end'}}>
               <FlatButton
                 label="Back"
                 disabled={stepIndex === 0}
@@ -72,7 +75,8 @@ const Quiz = React.createClass({
             </div>
           </div>
         </div>
-        {localStorage.getItem('auther') === "true" ? <RaisedButton label="Edit" primary={true}
+        {localStorage.getItem('auther') === "true" ? <div style={{marginTop: 20}}> <RaisedButton label="Edit" primary={true}
+          style={{marginRight: 12}}
           onClick={()=>{
             dispatch({
               type : types.NAVIGATE_TO,
@@ -83,7 +87,20 @@ const Quiz = React.createClass({
                 }
               }
             });
-          }}/> : null }
+          }}/> <RaisedButton label="Go Live" primary={true}
+            disabled={quiz.live}
+            onClick={()=>{
+              dispatch({
+                type : types.UPDATE_QUIZ,
+                quiz : {...quiz, live:true}
+              });
+              dispatch({
+                type : types.NAVIGATE_TO,
+                route : {
+                  name : routeNames.LIVE_QUIZ
+                }
+              });
+            }}/> </div> : null }
 
       </div>
     )

@@ -16,6 +16,17 @@ import * as routeNames from '../constants/routeNames';
 import Router from './router';
 import SelectCourse from './select_course';
 
+
+const style = {
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+  justifyContent: 'center',
+  height: '100%',
+  padding: '0',
+  margin: '0 auto'
+}
+
 const Container = React.createClass({
   getInitialState: function() {
     return {
@@ -85,7 +96,7 @@ const Container = React.createClass({
       return (
         <div>
           {this.renderDrawer()}
-          <Router />
+          <div style={style}><Router /></div>
         </div>
 
       )
@@ -100,7 +111,6 @@ const Container = React.createClass({
       <div>
         <AppBar
           title="MIS Workshop"
-          iconClassNameRight="muidocs-icon-navigation-expand-more"
           onLeftIconButtonTouchTap={this.toggleDrawer}
           onTitleTouchTap={this.resetRoute}
           iconElementRight={
