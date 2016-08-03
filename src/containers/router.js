@@ -7,7 +7,9 @@ import * as routeNames from '../constants/routeNames';
 import Home from './home';
 import Questions from './questions';
 import Question from './question_view';
-import AddEditQuestion from './add_question';
+import AddQuestion from './add_question';
+import EditQuestion from './edit_question';
+
 import AddEditQuiz from './add_quiz';
 
 import Quizes from './quizes';
@@ -25,13 +27,13 @@ const Router = ({route, dispatch}) => {
     case routeNames.VIEW_QUESTION :
       return <Question {...route.params} />;
     case routeNames.EDIT_QUESTION :
-      return <AddEditQuestion {...route.params} afterEdit={(question)=>{
+      return <EditQuestion {...route.params} afterEdit={(question_id)=>{
           dispatch({
             type : types.NAVIGATE_TO,
             route : {
               name : routeNames.VIEW_QUESTION,
               params : {
-                question
+                question_id
               }
             }
           });
@@ -55,7 +57,7 @@ const Router = ({route, dispatch}) => {
     case routeNames.LIVE_QUIZ :
       return <LiveQuiz />;
     case routeNames.ADD_QUESTION :
-      return <AddEditQuestion afterInsert={()=>{
+      return <AddQuestion afterInsert={()=>{
           dispatch({
             type : types.NAVIGATE_TO,
             route : {

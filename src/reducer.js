@@ -8,7 +8,7 @@ function questions(state=[], action){
     case types.INSERT_QUESTION:
       return [action.question, ...state]
     case types.UPDATE_QUESTION:
-      return [action.question, ...(state.filter((q)=> { return q._id != action.question._id}))];
+      return state.map((q)=> { return q._id == action.question._id ? action.question : q})
     case types.REMOVE_QUESTION:
       return state.filter((q)=> { return q._id != action.id})
     default:
@@ -21,7 +21,7 @@ function answers(state=[], action){
     case types.INSERT_ANSWER:
       return [action.answer, ...state]
     case types.UPDATE_ANSWER:
-      return [action.answer, ...(state.filter((q)=> { return q._id != action.answer._id}))];
+      return state.map((ans)=> { return ans._id == action.answer._id ? action.answer : ans})
     case types.REMOVE_ANSWER:
       return state.filter((q)=> { return q._id != action.id})
     default:
@@ -34,7 +34,7 @@ function quizes(state=[], action){
     case types.INSERT_QUIZ:
       return [action.quiz, ...state]
     case types.UPDATE_QUIZ:
-      return [action.quiz, ...(state.filter((q)=> { return q._id != action.quiz._id}))];
+      return state.map((q)=> { return q._id == action.quiz._id ? action.quiz : q})
     case types.REMOVE_QUIZ:
       return state.filter((q)=> { return q._id != action.id})
     default:
@@ -47,7 +47,7 @@ function courses(state=[], action){
     case types.INSERT_COURSE:
       return [action.course, ...state]
     case types.UPDATE_COURSE:
-      return [action.course, ...(state.filter((q)=> { return q._id != action.course._id}))];
+      return state.map((c)=> { return c._id == action.course._id ? action.course : c})
     case types.REMOVE_COURSE:
       return state.filter((q)=> { return q._id != action.id})
     default:

@@ -4,7 +4,7 @@ import * as types from './constants/ActionTypes';
 import * as routeNames from './constants/routeNames';
 
 import { combineReducers } from 'redux'
-import { createStore, applyMiddleware  } from 'redux'
+import { createStore, applyMiddleware, compose  } from 'redux'
 import PouchMiddleware from 'pouch-redux-middleware'
 
 
@@ -95,10 +95,14 @@ function createAppStore(user){
       }
   }]);
 
-  const createStoreWithMiddleware = applyMiddleware(pouchMiddleware)(createStore);
+  // const createStoreWithMiddleware = applyMiddleware(pouchMiddleware)(createStore);
+  //
+  // const AppStore = createStoreWithMiddleware(AppReducer);
 
-  const AppStore = createStoreWithMiddleware(AppReducer);
-
+    let AppStore = createStore(AppReducer, {}, compose(
+      applyMiddleware(pouchMiddleware),
+      window.devToolsExtension ? window.devToolsExtension() : f => f
+    ));
 
   const remoteDB = new PouchDB('http://' + user.username + ':' + user.password +'@couch.bizzotech.com:5984/' + user.dbName);
 
