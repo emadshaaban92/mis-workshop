@@ -8,14 +8,23 @@ import {
 import RaisedButton from 'material-ui/RaisedButton';
 import FlatButton from 'material-ui/FlatButton';
 
-import Question from '../containers/question';
+import QuestionView from './question_view';
+
+import uuid from 'node-uuid';
+import R from 'ramda';
 
 const QuizView = React.createClass({
     getInitialState: function() {
       return {
         finished: false,
         stepIndex: 0,
+        answers : this.props.answers
       };
+    },
+    componentWillReceiveProps: function(nextProps){
+        if(nextProps.answers){
+            this.setState({...this.state, answers: nextProps.answers});
+        }
     },
     handleNext : function(){
       const {stepIndex} = this.state;
@@ -38,21 +47,9 @@ const QuizView = React.createClass({
         </Step>
       )
     },
-    renderEditButton: function(){
-        const {question, onClickEdit} = this.props;
-        if(localStorage.getItem('auther') === "true"){
-            return <RaisedButton label="Edit" primary={true} onClick={onClickEdit}/>
-        }
-    },
-    renderLiveButton: function(){
-        const {question, onClickLive} = this.props;
-        if(localStorage.getItem('auther') === "true"){
-            return <RaisedButton label="Live" primary={true} onClick={onClickLive}/>
-        }
-    },
     render : function(){
       const {quiz, questions} = this.props;
-      const {finished, stepIndex} = this.state;
+      const {finished, stepIndex, answers} = this.state;
       const contentStyle = {margin: '0 16px'};
       return (
         <div style={{width: '100%', maxWidth: 700, margin: 'auto'}}>
@@ -62,7 +59,8 @@ const QuizView = React.createClass({
           <div style={contentStyle}>
             <div>
               <div style={{display: 'flex', justifyContent: 'center'}}>
-                <Question question_id={questions[stepIndex]._id} />
+                <QuestionView question={questions[stepIndex]} answer={answers[stepIndex]}
+                    onChange={(answer)=>{this.props.onChangeAnswer(answer, stepIndex)}}/>
               </div>
 
               <div style={{marginTop: 12,display: 'flex', justifyContent: 'flex-end'}}>
@@ -81,8 +79,7 @@ const QuizView = React.createClass({
               </div>
             </div>
           </div>
-          {this.renderEditButton()}
-          {this.renderLiveButton()}
+
         </div>
       )
     }

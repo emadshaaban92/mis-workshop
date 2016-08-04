@@ -2,16 +2,8 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 
 import uuid from 'node-uuid';
+import R from 'ramda';
 
-
-
-const R = require('ramda');
-
-import * as types from '../constants/ActionTypes';
-import * as routeNames from '../constants/routeNames';
-
-
-import {RadioButton, RadioButtonGroup} from 'material-ui/RadioButton';
 import TextField from 'material-ui/TextField';
 import RaisedButton from 'material-ui/RaisedButton';
 
@@ -20,8 +12,10 @@ import FlatButton from 'material-ui/FlatButton';
 
 import {Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColumn} from 'material-ui/Table';
 
-import AddQuestion from '../containers/add_question';
+import QuestionForm from './question_form';
 import MoveIcon from './move_icon';
+
+import {insertQuestion} from '../action_creators';
 
 
 const SelectQuestionsModal = React.createClass({
@@ -30,10 +24,10 @@ const SelectQuestionsModal = React.createClass({
       selected : this.props.selected
     };
   },
-  componentWillReceiveProps : function(){
+  componentWillReceiveProps : function(nextProps){
     this.setState({
       ...this.state,
-      selected : this.props.selected
+      selected : nextProps.selected
     })
   },
   renderQuestion : function(question, i){
@@ -91,6 +85,15 @@ const SelectQuestionsModal = React.createClass({
 
 
 const AddQuestionModal = React.createClass({
+    getInitialState: function(){
+        return {
+            question : undefined
+        }
+    },
+    saveQuestion : function(question){
+        this.props.dispatch(insertQuestion(question));
+        this.props.onSubmit(question._id);
+    },
   render : function(){
     const {open, onSubmit, onCancel } = this.props;
     return (
@@ -101,6 +104,11 @@ const AddQuestionModal = React.createClass({
             label="Cancel"
             primary={true}
             onTouchTap={onCancel}
+          />,<FlatButton
+            label="Submit"
+            primary={true}
+            keyboardFocused={true}
+            onTouchTap={()=>{this.saveQuestion(this.state.question)}}
           />,
         ]}
         modal={false}
@@ -108,7 +116,7 @@ const AddQuestionModal = React.createClass({
         onRequestClose={onCancel}
         autoScrollBodyContent={true}
       >
-        <AddQuestion afterInsert={(question_id)=>{onSubmit(question_id)}} />
+      <QuestionForm question={this.state.question} onChange={(question)=> {this.setState({...this.state, question})}} />
       </Dialog>
     )
   }
@@ -198,13 +206,7 @@ const QuizForm = React.createClass({
             }}/>
           <br /><br />
           <RaisedButton label="Save Quiz" primary={true}
-            onClick={()=>{
-              if(!this.state._id){
-                this.addQuiz()
-              }else{
-                this.saveQuiz()
-              }
-            }}/>
+            onClick={()=>{this.props.saveQuiz(this.state.quiz)}}/>
 
 
           <SelectQuestionsModal questions={this.props.questions}
@@ -220,6 +222,7 @@ const QuizForm = React.createClass({
 
           <AddQuestionModal
             open={this.state.add_question_modal}
+            dispatch={this.props.dispatch}
             onCancel={()=>{
               this.setState({...this.state, add_question_modal : false})
             }}
