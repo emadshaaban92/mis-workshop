@@ -3,25 +3,20 @@ import React, { Component } from 'react';
 import RaisedButton from 'material-ui/RaisedButton';
 import Checkbox from 'material-ui/Checkbox';
 
-import uuid from 'node-uuid';
-
 const QuestionView = React.createClass({
     getInitialState: function() {
         return {
-            answer : this.props.answer || {
-                _id : "answer/" + uuid.v1(),
-                question_id : this.props.question._id,
-                user : localStorage.getItem("username"),
-                type : "answer",
-                value : '',
-                submited : false
-            }
+            answer : this.props.answer
         }
     },
-    componentWillReceiveProps : function(){
-      if(this.props.answer){
-        this.setState({...this.state, answer : this.props.answer});
-      }
+    componentWillReceiveProps: function(nextProps){
+        if(nextProps.answer){
+            this.setState({...this.state, answer: nextProps.answer});
+        }
+    },
+    componentDidUpdate: function(prevProps, prevState){
+        if(prevState.answer !== this.state.answer)
+            this.props.onChange(this.state.answer);
     },
     renderChoice: function(value, i){
         return(
@@ -34,25 +29,10 @@ const QuestionView = React.createClass({
             />
         )
     },
-    saveAnswer: function(){
-        console.log(this.state.answer);
-        this.props.createOrUpdateAnswer(this.state.answer);
-    },
-    submitAnswer: function(){
-        const old_answer = this.state.answer;
-        const answer = {...old_answer, submited: true};
-        //this.setState({...this.state, answer});
-        this.props.createOrUpdateAnswer(answer);
-    },
-    renderEditButton: function(){
-        const {question, onClickEdit} = this.props;
-        if(localStorage.getItem('auther') === "true"){
-            return <RaisedButton label="Edit" primary={true} onClick={onClickEdit}/>
-        }
-    },
+
     render: function(){
         const {answer} = this.state;
-        const {question, createOrUpdateAnswer} = this.props;
+        const {question} = this.props;
         return (
           <div>
             <h1>{question.title}</h1>
@@ -60,12 +40,7 @@ const QuestionView = React.createClass({
             {question.choices.map(this.renderChoice)}
 
             <br />
-            <RaisedButton label="Save" primary={true} disabled={answer.submited || !answer.value}
-                style={{marginRight: 12}} onClick={this.saveAnswer}/>
-            <RaisedButton label="Submit" primary={true} disabled={answer.submited || !answer.value}
-                style={{marginRight: 12}} onClick={this.submitAnswer}/>
 
-            {this.renderEditButton()}
 
           </div>
         )

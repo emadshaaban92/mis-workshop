@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import R from 'ramda';
 import uuid from 'node-uuid';
 
-import {RadioButton, RadioButtonGroup} from 'material-ui/RadioButton';
 import TextField from 'material-ui/TextField';
 import RaisedButton from 'material-ui/RaisedButton';
 
@@ -34,10 +33,9 @@ const QuestionForm = React.createClass({
             }
         }
     },
-    componentWillReceiveProps : function(){
-      if(this.props.question){
-        this.setState({...this.state, question : this.props.question});
-      }
+    componentDidUpdate: function(prevProps, prevState){
+        if(prevState.question !== this.state.question)
+            this.props.onChange(this.state.question);
     },
     addChoice : function(){
         const {question} = this.state;
@@ -75,8 +73,6 @@ const QuestionForm = React.createClass({
               <QuestionFormInput form={this} label="Correct Answer" name="correct_answer" />
 
               <br /><br />
-              <RaisedButton label="Save Question" primary={true}
-                onClick={()=>{this.props.saveQuestion(this.state.question)}}/>
             </div>
         )
     }

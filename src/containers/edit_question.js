@@ -3,18 +3,28 @@ import { connect } from 'react-redux';
 
 
 import QuestionForm from '../components/question_form';
+import RaisedButton from 'material-ui/RaisedButton';
 
 import {updateQuestion} from '../action_creators';
 
 
 const EditQuestion = React.createClass({
-    saveQuestion : function(question){
+    getInitialState: function(){
+        return {
+            question : this.props.question
+        }
+    },saveQuestion : function(question){
         this.props.dispatch(updateQuestion(question));
         this.props.afterEdit(question._id);
     },
     render : function(){
         return (
-            <QuestionForm question={this.props.question} saveQuestion={this.saveQuestion} />
+            <div>
+                <QuestionForm question={this.state.question} onChange={(question)=> {this.setState({...this.state, question})}} />
+                <RaisedButton label="Save Question" primary={true}
+                      onClick={()=>{this.saveQuestion(this.state.question)}}/>
+            </div>
+
         )
     }
 });
