@@ -1,15 +1,11 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 
-import * as types from '../constants/ActionTypes'
-import * as routeNames from '../constants/routeNames';
-
-
-
 import {Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColumn} from 'material-ui/Table';
 
 import AddIcon from '../components/add_icon';
 
+import {navigateToQuiz, navigateToAddQuiz} from '../action_creators';
 
 const renderQuiz = (quiz, i) => {
   return (
@@ -24,31 +20,14 @@ const renderQuiz = (quiz, i) => {
 const renderAddIcon = (dispatch) => {
   if(localStorage.getItem('auther') === "true"){
     return (
-      <AddIcon onClick={()=>{
-        dispatch({
-          type : types.NAVIGATE_TO,
-          route : {
-            name : routeNames.ADD_QUIZ,
-          }
-        });
-      }}/>
+      <AddIcon onClick={()=>{dispatch(navigateToAddQuiz())}}/>
     )
   }
 }
 const Quizes = ({quizes, dispatch}) => {
   return (
     <div>
-      <Table onCellClick={(rowNumber) => {
-        dispatch({
-          type : types.NAVIGATE_TO,
-          route : {
-            name : routeNames.VIEW_QUIZ,
-            params : {
-              quiz : quizes[rowNumber]
-            }
-          }
-        });
-      }}>
+      <Table onCellClick={(rowNumber) => {dispatch(navigateToQuiz(quizes[rowNumber]._id))}}>
         <TableHeader adjustForCheckbox={false} displaySelectAll={false}>
           <TableRow>
             <TableHeaderColumn>#</TableHeaderColumn>

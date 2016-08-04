@@ -1,15 +1,11 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 
-import * as types from '../constants/ActionTypes'
-import * as routeNames from '../constants/routeNames';
-
-
-
 import {Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColumn} from 'material-ui/Table';
 
 import AddIcon from '../components/add_icon';
 
+import {navigateToQuestion, navigateToAddQuestion} from '../action_creators';
 
 const renderQuestion = (question, i) => {
   return (
@@ -24,14 +20,7 @@ const renderQuestion = (question, i) => {
 const renderAddIcon = (dispatch) => {
   if(localStorage.getItem('auther') === "true"){
     return (
-      <AddIcon onClick={()=>{
-        dispatch({
-          type : types.NAVIGATE_TO,
-          route : {
-            name : routeNames.ADD_QUESTION,
-          }
-        });
-      }}/>
+      <AddIcon onClick={()=>{dispatch(navigateToAddQuestion())}}/>
     )
   }
 }
@@ -39,17 +28,7 @@ const renderAddIcon = (dispatch) => {
 const Questions = ({questions, dispatch}) => {
   return (
     <div>
-      <Table onCellClick={(rowNumber) => {
-        dispatch({
-          type : types.NAVIGATE_TO,
-          route : {
-            name : routeNames.VIEW_QUESTION,
-            params : {
-              question : questions[rowNumber]
-            }
-          }
-        });
-      }}>
+      <Table onCellClick={(rowNumber) => {dispatch(navigateToQuestion(questions[rowNumber]._id));}}>
         <TableHeader adjustForCheckbox={false} displaySelectAll={false}>
           <TableRow>
             <TableHeaderColumn>#</TableHeaderColumn>

@@ -1,10 +1,12 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 
-import Quiz from './quiz_view';
+import Quiz from './quiz';
 import RaisedButton from 'material-ui/RaisedButton';
 import * as types from '../constants/ActionTypes';
 import * as routeNames from '../constants/routeNames';
+
+import {quizStopLive} from '../action_creators';
 
 const LiveQuiz = ({quiz, dispatch}) => {
   if(quiz){
@@ -13,10 +15,7 @@ const LiveQuiz = ({quiz, dispatch}) => {
         <Quiz quiz={quiz} />
         {localStorage.getItem('auther') === "true" ? <div style={{display: 'flex', justifyContent: 'center'}}>  <br /> <RaisedButton label="Stop" primary={true}
             onClick={()=>{
-              dispatch({
-                type : types.UPDATE_QUIZ,
-                quiz : {...quiz, live:false}
-              });
+              dispatch(quizStopLive(quiz));
             }}/> </div> : null }
       </div>
     );

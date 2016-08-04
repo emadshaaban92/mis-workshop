@@ -1,21 +1,21 @@
 import React, { Component } from 'react';
 
-import {RadioButton, RadioButtonGroup} from 'material-ui/RadioButton';
 import RaisedButton from 'material-ui/RaisedButton';
 import Checkbox from 'material-ui/Checkbox';
 
+import uuid from 'node-uuid';
 
 const QuestionView = React.createClass({
     getInitialState: function() {
-        const answer = this.props.answer || {
-            question_id : this.props.question._id,
-            user : localStorage.getItem("username"),
-            type : "answer",
-            value : '',
-            submited : false
-        }
         return {
-            answer
+            answer : this.props.answer || {
+                _id : "answer/" + uuid.v1(),
+                question_id : this.props.question._id,
+                user : localStorage.getItem("username"),
+                type : "answer",
+                value : '',
+                submited : false
+            }
         }
     },
     componentWillReceiveProps : function(){
@@ -44,6 +44,12 @@ const QuestionView = React.createClass({
         //this.setState({...this.state, answer});
         this.props.createOrUpdateAnswer(answer);
     },
+    renderEditButton: function(){
+        const {question, onClickEdit} = this.props;
+        if(localStorage.getItem('auther') === "true"){
+            return <RaisedButton label="Edit" primary={true} onClick={onClickEdit}/>
+        }
+    },
     render: function(){
         const {answer} = this.state;
         const {question, createOrUpdateAnswer} = this.props;
@@ -59,22 +65,7 @@ const QuestionView = React.createClass({
             <RaisedButton label="Submit" primary={true} disabled={answer.submited || !answer.value}
                 style={{marginRight: 12}} onClick={this.submitAnswer}/>
 
-            {localStorage.getItem('auther') === "true" ? <div>
-              <RaisedButton label="Edit" primary={true}
-                onClick={()=>{
-                  dispatch({
-                    type : types.NAVIGATE_TO,
-                    route : {
-                      name : routeNames.EDIT_QUESTION,
-                      params : {
-                        question_id : question._id
-                      }
-                    }
-                  });
-                }}/>
-
-            </div> : null }
-
+            {this.renderEditButton()}
 
           </div>
         )

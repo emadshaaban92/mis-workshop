@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import R from 'ramda';
+import uuid from 'node-uuid';
 
 import {RadioButton, RadioButtonGroup} from 'material-ui/RadioButton';
 import TextField from 'material-ui/TextField';
@@ -10,7 +11,7 @@ const QuestionFormInput = (props) => {
     return (
         <TextField {...props}
           floatingLabelText={label}
-          value={form.state[name]}
+          value={form.state.question[name]}
           onChange={(e, new_input)=>{
               const question = {...form.state.question};
               question[name] = new_input;
@@ -22,14 +23,15 @@ const QuestionFormInput = (props) => {
 
 const QuestionForm = React.createClass({
     getInitialState: function() {
-        const question = this.props.question || {
-            title: '',
-            text: '',
-            choices: [''],
-            correct_answer: ''
-        }
         return {
-            question
+            question : this.props.question || {
+                _id : "question/" + uuid.v1(),
+                title: '',
+                text: '',
+                choices: [''],
+                type : "question",
+                correct_answer: ''
+            }
         }
     },
     componentWillReceiveProps : function(){

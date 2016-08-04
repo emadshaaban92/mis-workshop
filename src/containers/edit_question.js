@@ -1,21 +1,15 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 
-const uuid = require('node-uuid');
-const R = require('ramda');
-
-import * as types from '../constants/ActionTypes';
-import * as routeNames from '../constants/routeNames';
 
 import QuestionForm from '../components/question_form';
+
+import {updateQuestion} from '../action_creators';
 
 
 const EditQuestion = React.createClass({
     saveQuestion : function(question){
-        this.props.dispatch({
-          type : types.UPDATE_QUESTION,
-          question
-        });
+        this.props.dispatch(updateQuestion(question));
         this.props.afterEdit(question._id);
     },
     render : function(){

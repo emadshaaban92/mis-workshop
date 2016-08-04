@@ -9,9 +9,7 @@ import MenuItem from 'material-ui/MenuItem';
 import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
 import FlatButton from 'material-ui/FlatButton';
 
-
-import * as types from '../constants/ActionTypes'
-import * as routeNames from '../constants/routeNames';
+import {navtigateToQuizes, navigateToQuestions, navigateToLiveQuiz, resetRoute} from '../action_creators';
 
 import Router from './router';
 import SelectCourse from './select_course';
@@ -37,9 +35,7 @@ const Container = React.createClass({
     this.setState({...this.state, drawerActive : !this.state.drawerActive});
   },
   resetRoute : function(){
-    this.props.dispatch({
-      type : types.RESET_ROUTE,
-    });
+    this.props.dispatch(resetRoute());
   },
   logout : function(){
     localStorage.clear();
@@ -59,32 +55,17 @@ const Container = React.createClass({
         onRequestChange={this.toggleDrawer}
       >
         <MenuItem onTouchTap={()=>{
-          this.props.dispatch({
-            type : types.NAVIGATE_TO,
-            route : {
-              name : routeNames.QUIZES
-            }
-          });
+          this.props.dispatch(navtigateToQuizes());
           this.toggleDrawer();
         }}>Quizes</MenuItem>
 
         <MenuItem onTouchTap={()=>{
-          this.props.dispatch({
-            type : types.NAVIGATE_TO,
-            route : {
-              name : routeNames.QUESTIONS
-            }
-          });
+          this.props.dispatch(navigateToQuestions());
           this.toggleDrawer();
         }}>Questions</MenuItem>
 
         <MenuItem onTouchTap={()=>{
-          this.props.dispatch({
-            type : types.NAVIGATE_TO,
-            route : {
-              name : routeNames.LIVE_QUIZ
-            }
-          });
+          this.props.dispatch(navigateToLiveQuiz());
           this.toggleDrawer();
         }}>Live Quiz</MenuItem>
 
@@ -92,7 +73,7 @@ const Container = React.createClass({
     )
   },
   renderBody : function(){
-    if(this.props.selectedCourse){
+    if(localStorage.getItem('selected_course')){
       return (
         <div>
           {this.renderDrawer()}
@@ -133,8 +114,4 @@ const Container = React.createClass({
   }
 });
 
-export default connect((state)=> {
-  return {
-    selectedCourse : localStorage.getItem('selected_course')
-  }
-})(Container);
+export default connect()(Container);
