@@ -38,12 +38,15 @@ const Container = React.createClass({
     this.props.dispatch(resetRoute());
   },
   logout : function(){
+    indexedDB.deleteDatabase('_pouch_' + localStorage.getItem('dbName'));
     localStorage.clear();
     location.reload();
   },
   selectCourse : function(){
+    indexedDB.deleteDatabase('_pouch_' + localStorage.getItem('dbName'));
     localStorage.removeItem('selected_course');
     localStorage.removeItem('auther');
+    localStorage.setItem('dbName', 'mis-' + localStorage.getItem('username'));
     location.reload();
   },
   renderDrawer : function(){
