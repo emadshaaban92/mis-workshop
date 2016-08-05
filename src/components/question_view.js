@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 
+import R from 'ramda';
+
 import RaisedButton from 'material-ui/RaisedButton';
 import Checkbox from 'material-ui/Checkbox';
 
@@ -46,18 +48,26 @@ const QuestionView = React.createClass({
             />
         )
     },
-
-    render: function(){
+    getAttachmentUrl: function(){
         const {answer} = this.state;
-        const {question} = this.props;
-        return (
-          <div>
-            <h1>{question.title}</h1>
-            <h3>{question.text}</h3>
-            {question.choices.map(this.renderChoice)}
-
-            <br />
-
+        if(answer._attachments){
+            const names = R.keys(answer._attachments);
+            console.log(names)
+            return 'http://couch.bizzotech.com/mis_workshop_v1/' + localStorage.getItem('dbName') + '/' + answer._id + '/' + names[0];
+        }
+    },
+    renderAttachment: function(){
+        const url = this.getAttachmentUrl();
+        if(url){
+            const names = R.keys(answer._attachments);
+            return (
+                <a href={url}>{names[0]}</a>
+            )
+        }
+    },
+    renderAttachArea: function(){
+        return(
+            <div>
                 <RaisedButton
                   label="Attach File"
                   labelPosition="before"
@@ -72,10 +82,26 @@ const QuestionView = React.createClass({
                               'content_type': file.type,
                               data: file
                           }
-                          this.setState({...this.state, answer: {...this.state.answer, _attachments}})
+                          this.setState({...this.state, answer: {...answer, _attachments}})
                       } }/>
                 </RaisedButton>
 
+                {this.renderAttachment()}
+            </div>
+        )
+    },
+    render: function(){
+        const {answer} = this.state;
+        const {question} = this.props;
+        return (
+          <div>
+            <h1>{question.title}</h1>
+            <h3>{question.text}</h3>
+            {question.choices.map(this.renderChoice)}
+
+            <br />
+
+            {this.renderAttachArea()}
 
           </div>
         )

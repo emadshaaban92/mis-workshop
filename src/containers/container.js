@@ -41,10 +41,6 @@ const Container = React.createClass({
   logout : function(){
     indexedDB.deleteDatabase('_pouch_' + localStorage.getItem('dbName'));
     indexedDB.deleteDatabase('_pouch_mis-' + localStorage.getItem('username'));
-    // setTimeout(function(){
-    //     console.log(dbs.length);
-    //
-    // }, 2000);
     localStorage.clear();
     location.reload();
   },
