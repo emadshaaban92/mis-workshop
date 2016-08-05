@@ -18,7 +18,7 @@ const Quiz = React.createClass({
         stepIndex: 0,
         answers : this.props.answers.map((ans, i)=>{
             return ans || {
-                _id : "answer/" + uuid.v1(),
+                _id : "answer_" + uuid.v1(),
                 question_id : this.props.questions[i]._id,
                 user : localStorage.getItem("username"),
                 type : "answer",

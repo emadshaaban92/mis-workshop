@@ -12,11 +12,12 @@ const Question = React.createClass({
     getInitialState: function(){
         return {
             answer : this.props.answer || {
-                _id : "answer/" + uuid.v1(),
+                _id : "answer_" + uuid.v1(),
                 question_id : this.props.question._id,
                 user : localStorage.getItem("username"),
                 type : "answer",
                 value : '',
+                _attachments: undefined,
                 submited : false
             }
         }

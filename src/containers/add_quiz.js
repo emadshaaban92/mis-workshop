@@ -13,7 +13,7 @@ const AddQuiz = React.createClass({
     getInitialState: function(){
         return {
             quiz : {
-                _id : "quiz/" + uuid.v1(),
+                _id : "quiz_" + uuid.v1(),
                 type : "quiz",
                 title : '',
                 questions : []

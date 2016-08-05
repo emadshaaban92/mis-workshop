@@ -12,7 +12,7 @@ const AddQuestion = React.createClass({
     getInitialState: function(){
         return {
             question : {
-                _id : "question/" + uuid.v1(),
+                _id : "question_" + uuid.v1(),
                 title: '',
                 text: '',
                 choices: [''],

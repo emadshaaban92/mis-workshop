@@ -3,6 +3,22 @@ import React, { Component } from 'react';
 import RaisedButton from 'material-ui/RaisedButton';
 import Checkbox from 'material-ui/Checkbox';
 
+const styles = {
+  button: {
+    margin: 12,
+  },
+  exampleImageInput: {
+    cursor: 'pointer',
+    position: 'absolute',
+    top: 0,
+    bottom: 0,
+    right: 0,
+    left: 0,
+    width: '100%',
+    opacity: 0,
+  },
+};
+
 const QuestionView = React.createClass({
     getInitialState: function() {
         return {
@@ -17,6 +33,7 @@ const QuestionView = React.createClass({
     componentDidUpdate: function(prevProps, prevState){
         if(prevState.answer !== this.state.answer)
             this.props.onChange(this.state.answer);
+        console.log(this.state);
     },
     renderChoice: function(value, i){
         return(
@@ -40,6 +57,24 @@ const QuestionView = React.createClass({
             {question.choices.map(this.renderChoice)}
 
             <br />
+
+                <RaisedButton
+                  label="Attach File"
+                  labelPosition="before"
+                  style={styles.button}
+                >
+                  <input type="file"
+                      style={styles.exampleImageInput}
+                      onChange={(e)=>{
+                          const file =  e.target.files[0];
+                          const _attachments = {};
+                          _attachments[file.name] = {
+                              'content_type': file.type,
+                              data: file
+                          }
+                          this.setState({...this.state, answer: {...this.state.answer, _attachments}})
+                      } }/>
+                </RaisedButton>
 
 
           </div>
