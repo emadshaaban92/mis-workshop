@@ -28,6 +28,7 @@ if(loggedIn){
   var AppStore = createAppStore(user);
 }
 
+const nonWebKitBrowser = indexedDB.webkitGetDatabaseNames == undefined;
 
 const App = ()=>{
   if(loggedIn){
@@ -37,6 +38,12 @@ const App = ()=>{
           <Container />
         </MuiThemeProvider>
       </Provider>
+    );
+  }
+
+  if(nonWebKitBrowser){
+    return (
+      <h1>Please use Google Chrome to open this application</h1>
     );
   }
 

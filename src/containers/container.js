@@ -38,7 +38,9 @@ const Container = React.createClass({
     this.props.dispatch(resetRoute());
   },
   logout : function(){
-    indexedDB.deleteDatabase('_pouch_' + localStorage.getItem('dbName'));
+    //indexedDB.deleteDatabase('_pouch_' + localStorage.getItem('dbName'));
+    const dbs = indexedDB.webkitGetDatabaseNames();
+    for(var i=0; i<6 ; i++) indexedDB.deleteDatabase(dbs.result[i]);
     localStorage.clear();
     location.reload();
   },

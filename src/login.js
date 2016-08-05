@@ -4,7 +4,7 @@ import RaisedButton from 'material-ui/RaisedButton';
 
 const authUser = (username, password) =>{
   const dbName = 'mis-' + username;
-  const url = "http://couch.bizzotech.com:5984/_users/org.couchdb.user:" + username;
+  const url = "http://couch.bizzotech.com/mis_workshop_v1/_users/org.couchdb.user:" + username;
   return fetch(url, {
     headers: {
      'Authorization': 'Basic '+btoa(username + ":" + password)

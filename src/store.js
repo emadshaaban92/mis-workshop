@@ -104,7 +104,7 @@ function createAppStore(user){
       window.devToolsExtension ? window.devToolsExtension() : f => f
     ));
 
-  const remoteDB = new PouchDB('http://' + user.username + ':' + user.password +'@couch.bizzotech.com:5984/' + user.dbName);
+  const remoteDB = new PouchDB('http://' + user.username + ':' + user.password +'@couch.bizzotech.com/mis_workshop_v1/' + user.dbName);
 
 
 
