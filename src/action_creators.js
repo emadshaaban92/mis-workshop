@@ -54,10 +54,10 @@ export const updateQuiz = (quiz) => {
     }
 }
 
-export const quizGoLive = (quiz) => {
+export const quizToggleLive = (quiz) => {
     return {
       type : types.UPDATE_QUIZ,
-      quiz : {...quiz, live:true}
+      quiz : {...quiz, live: !quiz.live}
     }
 }
 

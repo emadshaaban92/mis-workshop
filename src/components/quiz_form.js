@@ -87,7 +87,14 @@ const SelectQuestionsModal = React.createClass({
 const AddQuestionModal = React.createClass({
     getInitialState: function(){
         return {
-            question : undefined
+            question : {
+                _id : "question/" + uuid.v1(),
+                title: '',
+                text: '',
+                choices: [''],
+                type : "question",
+                correct_answer: ''
+            }
         }
     },
     saveQuestion : function(question){
@@ -129,18 +136,17 @@ const QuizForm = React.createClass({
         return {
             select_questions_modal : false,
             add_question_modal : false,
-            quiz : this.props.quiz || {
-                _id : "quiz/" + uuid.v1(),
-                type : "quiz",
-                title : '',
-                questions : []
-            }
+            quiz : this.props.quiz
         }
     },
-    componentWillReceiveProps: function(){
-        if(this.props.quiz){
-            this.setState({...this.state, quiz : this.props.quiz});
-        }
+    // componentWillReceiveProps: function(){
+    //     if(this.props.quiz){
+    //         this.setState({...this.state, quiz : this.props.quiz});
+    //     }
+    // },
+    componentDidUpdate: function(prevProps, prevState){
+        if(prevState.quiz !== this.state.quiz)
+            this.props.onChange(this.state.quiz);
     },
     moveUp : function(i){
       if(i > 0){
@@ -173,7 +179,7 @@ const QuizForm = React.createClass({
     render : function(){
       return (
         <div>
-          <h1>Add Quiz</h1>
+
           <TextField
             floatingLabelText="Title"
             value={this.state.quiz.title}
@@ -205,34 +211,40 @@ const QuizForm = React.createClass({
               this.setState({...this.state, add_question_modal : true})
             }}/>
           <br /><br />
-          <RaisedButton label="Save Quiz" primary={true}
-            onClick={()=>{this.props.saveQuiz(this.state.quiz)}}/>
 
 
-          <SelectQuestionsModal questions={this.props.questions}
-            selected={this.state.quiz.questions}
-            open={this.state.select_questions_modal}
-            onCancel={()=>{
-              this.setState({...this.state, select_questions_modal : false})
-            }}
-            onSubmit={(questions)=>{
-              console.log(questions)
-              this.setState({...this.state, quiz : {...this.state.quiz, questions}, select_questions_modal : false})
-            }} />
 
-          <AddQuestionModal
-            open={this.state.add_question_modal}
-            dispatch={this.props.dispatch}
-            onCancel={()=>{
-              this.setState({...this.state, add_question_modal : false})
-            }}
-            onSubmit={(question_id)=>{
-              const questions = [...this.state.quiz.questions, question_id];
-              this.setState({...this.state,  quiz : {...this.state.quiz, questions}, add_question_modal : false})
-            }} />
+        {this.renderModals()}
         </div>
       )
-    }
+  },
+  renderModals: function(){
+      return (
+          <div>
+              <SelectQuestionsModal questions={this.props.questions}
+                selected={this.state.quiz.questions}
+                open={this.state.select_questions_modal}
+                onCancel={()=>{
+                  this.setState({...this.state, select_questions_modal : false})
+                }}
+                onSubmit={(questions)=>{
+                  console.log(questions)
+                  this.setState({...this.state, quiz : {...this.state.quiz, questions}, select_questions_modal : false})
+                }} />
+
+              <AddQuestionModal
+                open={this.state.add_question_modal}
+                dispatch={this.props.dispatch}
+                onCancel={()=>{
+                  this.setState({...this.state, add_question_modal : false})
+                }}
+                onSubmit={(question_id)=>{
+                  const questions = [...this.state.quiz.questions, question_id];
+                  this.setState({...this.state,  quiz : {...this.state.quiz, questions}, add_question_modal : false})
+                }} />
+          </div>
+      )
+  }
 });
 
 

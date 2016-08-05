@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 
 import RaisedButton from 'material-ui/RaisedButton';
 
-import {quizGoLive, navigateToLiveQuiz, navigateToEditQuiz} from '../action_creators';
+import {quizToggleLive, navigateToLiveQuiz, navigateToEditQuiz} from '../action_creators';
 
 import QuizView from '../components/quiz_view';
 
@@ -39,7 +39,7 @@ const Quiz = React.createClass({
     },
     onClickLive: function(){
         const {quiz, dispatch} = this.props;
-        dispatch(quizGoLive(quiz));
+        dispatch(quizToggleLive(quiz));
         dispatch(navigateToLiveQuiz());
     },
     renderEditButton: function(){
@@ -49,6 +49,9 @@ const Quiz = React.createClass({
     },
     renderLiveButton: function(){
         if(localStorage.getItem('auther') === "true"){
+            if(this.props.quiz.live){
+                return <RaisedButton label="Stop" primary={true} onClick={this.onClickLive}/>
+            }
             return <RaisedButton label="Live" primary={true} onClick={this.onClickLive}/>
         }
     },
@@ -61,7 +64,7 @@ const Quiz = React.createClass({
     render: function(){
         const {quiz, questions} = this.props;
         return(
-            <div>
+            <div style={{width : '100%'}}>
                 <QuizView {...this.props} answers={this.state.answers}
                     onChangeAnswer={this.onChangeAnswer}
                     onClickEdit={this.onClickEdit} onClickLive={this.onClickLive} />

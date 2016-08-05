@@ -23,14 +23,7 @@ const QuestionFormInput = (props) => {
 const QuestionForm = React.createClass({
     getInitialState: function() {
         return {
-            question : this.props.question || {
-                _id : "question/" + uuid.v1(),
-                title: '',
-                text: '',
-                choices: [''],
-                type : "question",
-                correct_answer: ''
-            }
+            question : this.props.question
         }
     },
     componentDidUpdate: function(prevProps, prevState){

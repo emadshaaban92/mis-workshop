@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 
+import RaisedButton from 'material-ui/RaisedButton';
 
 import QuizForm from '../components/quiz_form';
 
@@ -8,12 +9,25 @@ import {updateQuiz} from '../action_creators';
 
 
 const EditQuiz = React.createClass({
-    saveQuiz : function(quiz){
+    getInitialState: function(){
+        return {
+            quiz : this.props.quiz
+        }
+    },
+    saveQuiz : function(){
+        const {quiz} = this.state;
         this.props.dispatch(updateQuiz(quiz));
         this.props.afterEdit(quiz._id);
     },
     render : function(){
-        return <QuizForm quiz={this.props.quiz} saveQuiz={this.saveQuiz} />
+        return(
+            <div>
+                <h1>Edit Quiz</h1>
+                <QuizForm quiz={this.state.quiz} onChange={(quiz)=> {this.setState({...this.state, quiz})}} />
+                <RaisedButton label="Save Quiz" primary={true}
+                  onClick={this.saveQuiz}/>
+            </div>
+        )
     }
 });
 

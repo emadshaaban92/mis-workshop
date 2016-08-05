@@ -21,6 +21,7 @@ const style = {
   alignItems: 'center',
   justifyContent: 'center',
   height: '100%',
+  width: '100%',
   padding: '0',
   margin: '0 auto'
 }

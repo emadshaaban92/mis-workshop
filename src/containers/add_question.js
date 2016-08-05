@@ -6,13 +6,23 @@ import RaisedButton from 'material-ui/RaisedButton';
 
 import {insertQuestion} from '../action_creators';
 
+import uuid from 'node-uuid';
+
 const AddQuestion = React.createClass({
     getInitialState: function(){
         return {
-            question : undefined
+            question : {
+                _id : "question/" + uuid.v1(),
+                title: '',
+                text: '',
+                choices: [''],
+                type : "question",
+                correct_answer: ''
+            }
         }
     },
-    saveQuestion : function(question){
+    saveQuestion : function(){
+        const {question} = this.state;
         this.props.dispatch(insertQuestion(question));
         this.props.afterInsert(question._id);
     },
@@ -21,7 +31,7 @@ const AddQuestion = React.createClass({
             <div>
                 <QuestionForm question={this.state.question} onChange={(question)=> {this.setState({...this.state, question})}} />
                 <RaisedButton label="Save Question" primary={true}
-                      onClick={()=>{this.saveQuestion(this.state.question)}}/>
+                      onClick={this.saveQuestion}/>
             </div>
 
         )
