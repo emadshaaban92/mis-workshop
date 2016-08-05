@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 
+import R from 'ramda';
+
 import QuestionView from '../components/question_view';
 import RaisedButton from 'material-ui/RaisedButton';
 
@@ -10,13 +12,14 @@ import uuid from 'node-uuid';
 
 const Question = React.createClass({
     getInitialState: function(){
+        const {question, answer} = this.props;
         return {
-            answer : this.props.answer || {
+            answer : answer || {
                 _id : "answer_" + uuid.v1(),
-                question_id : this.props.question._id,
+                question_id : question._id,
                 user : localStorage.getItem("username"),
                 type : "answer",
-                value : '',
+                value : question.kind === 'choose_multi' ? R.repeat(false, question.choices.length) : '',
                 _attachments: undefined,
                 submited : false
             }

@@ -4,6 +4,8 @@ import uuid from 'node-uuid';
 
 import TextField from 'material-ui/TextField';
 import RaisedButton from 'material-ui/RaisedButton';
+import SelectField from 'material-ui/SelectField';
+import MenuItem from 'material-ui/MenuItem';
 
 const QuestionFormInput = (props) => {
     const {form, label, name} = props;
@@ -16,6 +18,7 @@ const QuestionFormInput = (props) => {
               question[name] = new_input;
               form.setState({...form.state, question});
           }}
+          style={{width: '556px'}}
         />
     )
 }
@@ -50,18 +53,42 @@ const QuestionForm = React.createClass({
           </div>
         )
     },
+    renderChoicesArea(){
+        return(
+            <div>
+                <h3>Choices</h3>
+                {this.state.question.choices.map(this.renderChoice)}
+                <br />
+                <RaisedButton label="Add Choice" primary={true} onClick={this.addChoice}/>
+            </div>
+        )
+    },
+    renderBody: function(){
+        const {question} = this.state;
+        if(question.kind == 'choose_single' || question.kind == 'choose_multi'){
+            return this.renderChoicesArea();
+        }
+    },
     render: function(){
+        const {question} = this.state;
         return (
             <div>
               <QuestionFormInput form={this} label="Title" name="title" />
               <br />
+                <SelectField value={question.kind} onChange={(e, i, kind)=>{this.setState({...this.satet, question : {...question, kind}})}}>
+                  <MenuItem value={'choose_single'} primaryText="Choose Single" />
+                  <MenuItem value={'choose_multi'} primaryText="Choose Multi" />
+                  <MenuItem value={'true_false'} primaryText="True or False" />
+                  <MenuItem value={'essay'} primaryText="Essay" />
+                  <MenuItem value={'attach'} primaryText="Attach" />
+                </SelectField>
+                <br />
               <QuestionFormInput form={this} label="Text" name="text" multiLine={true} rows={2} />
 
               <br />
-              <h3>Choices</h3>
-              {this.state.question.choices.map(this.renderChoice)}
 
-              <RaisedButton label="Add Choice" primary={true} onClick={this.addChoice}/>
+              {this.renderBody()}
+
               <br />
               <QuestionFormInput form={this} label="Correct Answer" name="correct_answer" />
 

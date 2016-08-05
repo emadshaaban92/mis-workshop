@@ -15,6 +15,7 @@ const AddQuestion = React.createClass({
                 _id : "question_" + uuid.v1(),
                 title: '',
                 text: '',
+                kind: 'choose_single',
                 choices: [''],
                 type : "question",
                 correct_answer: ''

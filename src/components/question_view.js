@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 
 import R from 'ramda';
 
+import TextField from 'material-ui/TextField';
 import RaisedButton from 'material-ui/RaisedButton';
 import Checkbox from 'material-ui/Checkbox';
 
@@ -37,13 +38,25 @@ const QuestionView = React.createClass({
             this.props.onChange(this.state.answer);
         console.log(this.state);
     },
-    renderChoice: function(value, i){
+    renderChoiceSingle: function(value, i){
+        const {answer} = this.state;
         return(
-            <Checkbox disabled={this.state.answer.submited} key={i} label={value}
-                checked={value == this.state.answer.value}
+            <Checkbox disabled={answer.submited} key={i} label={value}
+                checked={value == answer.value}
                 onCheck={()=>{
-                    const {answer} = this.state;
                     this.setState({...this.state, answer : {...answer, value}})
+                }}
+            />
+        )
+    },
+    renderChoiceMulti: function(value, i){
+        const {answer} = this.state;
+        return(
+            <Checkbox disabled={answer.submited} key={value + i} label={value}
+                checked={answer.value[i]}
+                onCheck={(e, v)=>{
+                    const value = R.update(i, v, answer.value);
+                    this.setState({...this.state, answer : {...answer, value}});
                 }}
             />
         )
@@ -57,6 +70,7 @@ const QuestionView = React.createClass({
         }
     },
     renderAttachment: function(){
+        const {answer} = this.state;
         const url = this.getAttachmentUrl();
         if(url){
             const names = R.keys(answer._attachments);
@@ -66,15 +80,12 @@ const QuestionView = React.createClass({
         }
     },
     renderAttachArea: function(){
+        const {answer} = this.state;
         return(
             <div>
-                <RaisedButton
-                  label="Attach File"
-                  labelPosition="before"
-                  style={styles.button}
-                >
-                  <input type="file"
-                      style={styles.exampleImageInput}
+                <h3>Attach your answer file :</h3>
+                <RaisedButton label="Attach File" labelPosition="before" style={styles.button}>
+                  <input type="file" style={styles.exampleImageInput}
                       onChange={(e)=>{
                           const file =  e.target.files[0];
                           const _attachments = {};
@@ -90,6 +101,69 @@ const QuestionView = React.createClass({
             </div>
         )
     },
+    renderTrueFalse: function(){
+        const {answer} = this.state;
+        return(
+            <div>
+                <Checkbox disabled={answer.submited} label="True"
+                    checked={answer.value === "true"}
+                    onCheck={()=>{
+                        this.setState({...this.state, answer : {...answer, value : "true"}})
+                    }}
+                />
+                <Checkbox disabled={answer.submited} label="False"
+                    checked={answer.value === "false"}
+                    onCheck={()=>{
+                        this.setState({...this.state, answer : {...answer, value : "false"}})
+                    }}
+                />
+            </div>
+
+        )
+    },
+    renderEssay: function(){
+        const {answer} = this.state;
+        return(
+            <div>
+                <h3>Write your answer :</h3>
+                <TextField value={answer.value} name={"answer_essay"}
+                    multiLine={true} rows={6}
+                  onChange={(e, value)=>{
+                    this.setState({...this.state, answer : {...answer, value}});
+                  }}/>
+            </div>
+
+        )
+    },
+    renderBody: function(){
+        const {answer} = this.state;
+        const {question} = this.props;
+        switch (question.kind) {
+            case 'choose_single':
+                return (
+                    <div>
+                        <h3>Choose the correct answer : </h3>
+                        {question.choices.map(this.renderChoiceSingle)}
+                    </div>
+                );
+            case 'choose_multi':
+                return (
+                    <div>
+                        <h3>Choose all the correct answers : </h3>
+                        {question.choices.map(this.renderChoiceMulti)}
+                    </div>
+                );
+            case 'true_false':
+                return this.renderTrueFalse();
+            case 'essay':
+                return this.renderEssay();
+            case 'attach':
+                return this.renderAttachArea();
+            default:
+                return
+
+        }
+    },
     render: function(){
         const {answer} = this.state;
         const {question} = this.props;
@@ -97,11 +171,11 @@ const QuestionView = React.createClass({
           <div>
             <h1>{question.title}</h1>
             <h3>{question.text}</h3>
-            {question.choices.map(this.renderChoice)}
+
 
             <br />
 
-            {this.renderAttachArea()}
+            {this.renderBody()}
 
           </div>
         )
