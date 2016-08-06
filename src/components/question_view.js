@@ -133,6 +133,7 @@ const QuestionView = React.createClass({
             <div>
                 <h3>Write your answer :</h3>
                 <TextField value={answer.value} name={"answer_essay"}
+                    style={{width: '100%'}}
                     multiLine={true} rows={6} disabled={answer.submited}
                   onChange={(e, value)=>{
                     this.setState({...this.state, answer : {...answer, value}});
@@ -173,13 +174,20 @@ const QuestionView = React.createClass({
     render: function(){
         const {question} = this.props;
         return (
-          <div>
+          <div  style={{width: '80%'}}>
             <h1>{question.title}</h1>
             <h3>{question.text}</h3>
 
             <br />
+            <div style={{display: 'flex', flexDirection: 'row'}}>
+                <div style={{width: '50%'}}>
+                    {this.renderBody()}
+                </div>
+                <div style={{width: '50%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center'}}>
+                    <span style={{fontSize: '30px'}}>{this.props.answer.mark}/{question.max_points || 1}</span>
+                </div>
+            </div>
 
-            {this.renderBody()}
 
           </div>
         )

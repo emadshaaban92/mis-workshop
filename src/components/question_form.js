@@ -29,6 +29,11 @@ const QuestionForm = React.createClass({
             question : this.props.question
         }
     },
+    componentWillReceiveProps: function(nextProps){
+        if(nextProps.question){
+            this.setState({...this.state, question: nextProps.question});
+        }
+    },
     componentDidUpdate: function(prevProps, prevState){
         if(prevState.question !== this.state.question)
             this.props.onChange(this.state.question);
@@ -90,7 +95,7 @@ const QuestionForm = React.createClass({
               {this.renderBody()}
 
               <br />
-              <QuestionFormInput form={this} label="Correct Answer" name="correct_answer" />
+              <QuestionFormInput form={this} label="Max Points" name="max_points" />
 
               <br /><br />
             </div>

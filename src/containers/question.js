@@ -14,7 +14,6 @@ import FlatButton from 'material-ui/FlatButton';
 import {upsertAnswer, updateAnswer, navigateToEditQuestion} from '../action_creators';
 import EditQuestion from './edit_question';
 
-
 import uuid from 'node-uuid';
 
 const styles = {
@@ -58,7 +57,7 @@ const Question = React.createClass({
         const {question} = this.props;
         const {answer} = this.state;
         return (
-            <div>
+            <div style={{width: '80%'}}>
                 <QuestionView question={question} answer={answer}
                     onChange={(answer)=> {this.setState({...this.state, answer})}} />
                 <RaisedButton label="Save" primary={true} disabled={answer.submited || !answer.value}
@@ -89,12 +88,12 @@ const Question = React.createClass({
     },
     renderForAuthor: function(){
         return (
-          <Tabs>
-            <Tab label="Edit Question" >
-                <EditQuestion question_id={this.props.question._id} afterEdit={()=>{}}/>;
-            </Tab>
+          <Tabs style={{width: '80%', margin: '20px'}}>
             <Tab label="Students Answers" >
               {this.props.stundetsAnswers.map(this.renderStudentAnswer)}
+            </Tab>
+            <Tab label="Edit Question" >
+                <EditQuestion question_id={this.props.question._id} afterEdit={()=>{}}/>;
             </Tab>
           </Tabs>
         )

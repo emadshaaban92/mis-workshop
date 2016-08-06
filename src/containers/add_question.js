@@ -18,7 +18,7 @@ const AddQuestion = React.createClass({
                 kind: 'choose_single',
                 choices: [''],
                 type : "question",
-                correct_answer: ''
+                max_points: 1
             }
         }
     },

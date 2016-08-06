@@ -91,15 +91,17 @@ const AddQuestionModal = React.createClass({
                 _id : "question_" + uuid.v1(),
                 title: '',
                 text: '',
+                kind: 'choose_single',
                 choices: [''],
                 type : "question",
-                correct_answer: ''
+                max_points: 1
             }
         }
     },
     saveQuestion : function(question){
         this.props.dispatch(insertQuestion(question));
         this.props.onSubmit(question._id);
+        this.setState(this.getInitialState());
     },
   render : function(){
     const {open, onSubmit, onCancel } = this.props;
@@ -139,11 +141,11 @@ const QuizForm = React.createClass({
             quiz : this.props.quiz
         }
     },
-    // componentWillReceiveProps: function(){
-    //     if(this.props.quiz){
-    //         this.setState({...this.state, quiz : this.props.quiz});
-    //     }
-    // },
+    componentWillReceiveProps: function(nextProps){
+        if(nextProps.quiz){
+            this.setState({...this.state, quiz: nextProps.quiz});
+        }
+    },
     componentDidUpdate: function(prevProps, prevState){
         if(prevState.quiz !== this.state.quiz)
             this.props.onChange(this.state.quiz);
@@ -168,7 +170,7 @@ const QuizForm = React.createClass({
     },
     renderQuestion : function(question, i){
       return (
-        <TableRow key={question._id}>
+        <TableRow key={question._id + i}>
           <TableRowColumn>{i}</TableRowColumn>
           <TableRowColumn>{question.title}</TableRowColumn>
           <TableRowColumn><MoveIcon direction="up" onClick={()=>{this.moveUp(i)}}/></TableRowColumn>

@@ -13,7 +13,13 @@ const EditQuestion = React.createClass({
         return {
             question : this.props.question
         }
-    },saveQuestion : function(question){
+    },
+    componentWillReceiveProps: function(nextProps){
+        if(nextProps.question){
+            this.setState({...this.state, question: nextProps.question});
+        }
+    },
+    saveQuestion : function(question){
         this.props.dispatch(updateQuestion(question));
         this.props.afterEdit(question._id);
     },

@@ -14,6 +14,11 @@ const EditQuiz = React.createClass({
             quiz : this.props.quiz
         }
     },
+    componentWillReceiveProps: function(nextProps){
+        if(nextProps.quiz){
+            this.setState({...this.state, quiz: nextProps.quiz});
+        }
+    },
     saveQuiz : function(){
         const {quiz} = this.state;
         this.props.dispatch(updateQuiz(quiz));
@@ -25,6 +30,7 @@ const EditQuiz = React.createClass({
                 <h1>Edit Quiz</h1>
                 <QuizForm quiz={this.state.quiz} onChange={(quiz)=> {this.setState({...this.state, quiz})}} />
                 <RaisedButton label="Save Quiz" primary={true}
+                    disabled={this.state.quiz === this.props.quiz}
                   onClick={this.saveQuiz}/>
             </div>
         )
