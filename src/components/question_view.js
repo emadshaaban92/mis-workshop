@@ -34,9 +34,8 @@ const QuestionView = React.createClass({
         }
     },
     componentDidUpdate: function(prevProps, prevState){
-        if(prevState.answer !== this.state.answer)
+        if(prevState.answer !== this.state.answer && this.props.onChange)
             this.props.onChange(this.state.answer);
-        console.log(this.state);
     },
     renderChoiceSingle: function(value, i){
         const {answer} = this.state;
@@ -81,6 +80,13 @@ const QuestionView = React.createClass({
     },
     renderAttachArea: function(){
         const {answer} = this.state;
+        if(answer.submited){
+            return(
+                <div>
+                    <h3>The Attached File : {this.renderAttachment()}</h3>
+                </div>
+            )
+        }
         return(
             <div>
                 <h3>Attach your answer file :</h3>
@@ -127,7 +133,7 @@ const QuestionView = React.createClass({
             <div>
                 <h3>Write your answer :</h3>
                 <TextField value={answer.value} name={"answer_essay"}
-                    multiLine={true} rows={6}
+                    multiLine={true} rows={6} disabled={answer.submited}
                   onChange={(e, value)=>{
                     this.setState({...this.state, answer : {...answer, value}});
                   }}/>
@@ -165,13 +171,11 @@ const QuestionView = React.createClass({
         }
     },
     render: function(){
-        const {answer} = this.state;
         const {question} = this.props;
         return (
           <div>
             <h1>{question.title}</h1>
             <h3>{question.text}</h3>
-
 
             <br />
 

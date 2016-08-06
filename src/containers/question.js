@@ -5,10 +5,26 @@ import R from 'ramda';
 
 import QuestionView from '../components/question_view';
 import RaisedButton from 'material-ui/RaisedButton';
+import {Tabs, Tab} from 'material-ui/Tabs';
+import TextField from 'material-ui/TextField';
+import FlatButton from 'material-ui/FlatButton';
 
-import {upsertAnswer, navigateToEditQuestion} from '../action_creators';
+
+
+import {upsertAnswer, updateAnswer, navigateToEditQuestion} from '../action_creators';
+import EditQuestion from './edit_question';
+
 
 import uuid from 'node-uuid';
+
+const styles = {
+  headline: {
+    fontSize: 24,
+    paddingTop: 16,
+    marginBottom: 12,
+    fontWeight: 400,
+  },
+};
 
 const Question = React.createClass({
     getInitialState: function(){
@@ -38,16 +54,7 @@ const Question = React.createClass({
         const answer = {...old_answer, submited: true};
         this.props.dispatch(upsertAnswer(answer));
     },
-    onClickEdit: function(){
-        const {question, dispatch} = this.props;
-        dispatch(navigateToEditQuestion(question._id));
-    },
-    renderEditButton: function(){
-        if(localStorage.getItem('auther') === "true"){
-            return <RaisedButton label="Edit" primary={true} onClick={this.onClickEdit}/>
-        }
-    },
-    render : function(){
+    renderForStudent : function(){
         const {question} = this.props;
         const {answer} = this.state;
         return (
@@ -58,11 +65,45 @@ const Question = React.createClass({
                     style={{marginRight: 12}} onClick={this.saveAnswer}/>
                 <RaisedButton label="Submit" primary={true} disabled={answer.submited || !answer.value}
                     style={{marginRight: 12}} onClick={this.submitAnswer}/>
-
-                {this.renderEditButton()}
             </div>
 
         )
+    },
+    renderStudentAnswer: function(answer, i){
+        return(
+            <div key={answer._id+answer._rev}>
+                <QuestionView question={this.props.question} answer={answer} />
+                <TextField floatingLabelText="Mark" defaultValue={answer.mark}
+                    ref={'mark'+answer._id}/>
+                <span> / {this.props.question.max_points || 1}</span>
+                <FlatButton label="Mark" primary={true}  keyboardFocused={true}
+                  onClick={()=>{
+                    const mark = this.refs['mark'+answer._id].input.value;
+                    this.props.dispatch(updateAnswer({
+                        ...answer,
+                        mark
+                    }));
+                }} />
+            </div>
+        )
+    },
+    renderForAuthor: function(){
+        return (
+          <Tabs>
+            <Tab label="Edit Question" >
+                <EditQuestion question_id={this.props.question._id} afterEdit={()=>{}}/>;
+            </Tab>
+            <Tab label="Students Answers" >
+              {this.props.stundetsAnswers.map(this.renderStudentAnswer)}
+            </Tab>
+          </Tabs>
+        )
+    },
+    render: function(){
+        if(localStorage.getItem('auther') === "true"){
+            return this.renderForAuthor();
+        }
+        return this.renderForStudent();
     }
 })
 
@@ -70,8 +111,10 @@ const Question = React.createClass({
 
 export default connect((state, {question_id}) => {
   const answers = state.answers.filter((answer) => {return answer.question_id === question_id});
+  const stundetsAnswers = state.answers.filter((answer) => {return answer.question_id === question_id && answer.submited});
   return {
     question: state.questions.find((q)=>{return q._id === question_id}),
-    answer: answers.find((answer)=>{return answer.user === localStorage.getItem('username')})
+    answer: answers.find((answer)=>{return answer.user === localStorage.getItem('username')}),
+    stundetsAnswers
   }
 })(Question);
