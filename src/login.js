@@ -2,17 +2,42 @@ import React, { Component } from 'react';
 import TextField from 'material-ui/TextField';
 import RaisedButton from 'material-ui/RaisedButton';
 
-const authUser = (username, password) =>{
-  const dbName = 'mis-' + username;
-  const url = "http://couch.bizzotech.com/mis_workshop_v1/_users/org.couchdb.user:" + username;
+// const authUser = (username, password) =>{
+//   const dbName = 'mis-' + username;
+//   const url = "http://couch.bizzotech.com/mis_workshop_v1/_users/org.couchdb.user:" + username;
+//   return fetch(url, {
+//     headers: {
+//      'Authorization': 'Basic '+btoa(username + ":" + password)
+//    }
+//  }).then(function(respnonse){
+//     if(respnonse.status == 200){
+//       localStorage.setItem('loggedIn', 1);
+//       localStorage.setItem('username', username);
+//       localStorage.setItem('password', password);
+//       localStorage.setItem('dbName', dbName);
+//
+//       location.reload();
+//     }
+//   });
+// }
+
+const authUser = (name, password) =>{
+  const dbName = 'mis-' + name;
+  const url = "http://couch.bizzotech.com/mis_workshop_v1/_session";
   return fetch(url, {
+    method: 'POST',
+    body: JSON.stringify({
+        name,
+        password
+    }),
     headers: {
-     'Authorization': 'Basic '+btoa(username + ":" + password)
+     'Accept': 'application/json',
+     'Content-Type': 'application/json'
    }
  }).then(function(respnonse){
     if(respnonse.status == 200){
       localStorage.setItem('loggedIn', 1);
-      localStorage.setItem('username', username);
+      localStorage.setItem('username', name);
       localStorage.setItem('password', password);
       localStorage.setItem('dbName', dbName);
 
