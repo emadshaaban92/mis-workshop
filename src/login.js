@@ -23,7 +23,7 @@ import RaisedButton from 'material-ui/RaisedButton';
 
 const authUser = (name, password) =>{
   const dbName = 'mis-' + name;
-  const url = "http://couch.bizzotech.com/mis_workshop_v1/_session";
+  const url = "https://couch.bizzotech.com/mis_workshop_v1/_session";
   return fetch(url, {
     method: 'POST',
     body: JSON.stringify({

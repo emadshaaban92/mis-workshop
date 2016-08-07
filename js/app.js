@@ -93008,10 +93008,8 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 // }
 
 var authUser = function authUser(name, password) {
-  var data = new FormData();
-  data.append("json", JSON.stringify({ name: name, password: password }));
   var dbName = 'mis-' + name;
-  var url = "http://couch.bizzotech.com/mis_workshop_v1/_session";
+  var url = "https://couch.bizzotech.com/mis_workshop_v1/_session";
   return fetch(url, {
     method: 'POST',
     body: JSON.stringify({
@@ -93363,7 +93361,7 @@ function createAppStore(user) {
         return f;
     }));
 
-    var remoteDB = new PouchDB('http://' + user.username + ':' + user.password + '@couch.bizzotech.com/mis_workshop_v1/' + user.dbName);
+    var remoteDB = new PouchDB('https://' + user.username + ':' + user.password + '@couch.bizzotech.com/mis_workshop_v1/' + user.dbName);
 
     localDB.sync(remoteDB, {
         live: true,
