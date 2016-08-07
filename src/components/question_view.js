@@ -30,7 +30,7 @@ const QuestionView = React.createClass({
     },
     componentWillReceiveProps: function(nextProps){
         if(nextProps.answer){
-            this.setState({...this.state, answer: nextProps.answer});
+            this.setState({answer: nextProps.answer});
         }
     },
     componentDidUpdate: function(prevProps, prevState){
@@ -43,7 +43,7 @@ const QuestionView = React.createClass({
             <Checkbox disabled={answer.submited} key={i} label={value}
                 checked={value == answer.value}
                 onCheck={()=>{
-                    this.setState({...this.state, answer : {...answer, value}})
+                    this.setState({answer : {...answer, value}})
                 }}
             />
         )
@@ -55,7 +55,7 @@ const QuestionView = React.createClass({
                 checked={answer.value[i]}
                 onCheck={(e, v)=>{
                     const value = R.update(i, v, answer.value);
-                    this.setState({...this.state, answer : {...answer, value}});
+                    this.setState({answer : {...answer, value}});
                 }}
             />
         )
@@ -99,7 +99,7 @@ const QuestionView = React.createClass({
                               'content_type': file.type,
                               data: file
                           }
-                          this.setState({...this.state, answer: {...answer, _attachments}})
+                          this.setState({answer: {...answer, _attachments}})
                       } }/>
                 </RaisedButton>
 
@@ -114,13 +114,13 @@ const QuestionView = React.createClass({
                 <Checkbox disabled={answer.submited} label="True"
                     checked={answer.value === "true"}
                     onCheck={()=>{
-                        this.setState({...this.state, answer : {...answer, value : "true"}})
+                        this.setState({answer : {...answer, value : "true"}})
                     }}
                 />
                 <Checkbox disabled={answer.submited} label="False"
                     checked={answer.value === "false"}
                     onCheck={()=>{
-                        this.setState({...this.state, answer : {...answer, value : "false"}})
+                        this.setState({answer : {...answer, value : "false"}})
                     }}
                 />
             </div>
@@ -136,7 +136,7 @@ const QuestionView = React.createClass({
                     style={{width: '100%'}}
                     multiLine={true} rows={6} disabled={answer.submited}
                   onChange={(e, value)=>{
-                    this.setState({...this.state, answer : {...answer, value}});
+                    this.setState({answer : {...answer, value}});
                   }}/>
             </div>
 

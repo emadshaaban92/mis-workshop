@@ -17,22 +17,15 @@ import MoveIcon from './move_icon';
 
 import {insertQuestion} from '../action_creators';
 
+import PureRenderMixin from 'react-addons-pure-render-mixin';
+
+
 
 const SelectQuestionsModal = React.createClass({
-  getInitialState: function() {
-    return {
-      selected : this.props.selected
-    };
-  },
-  componentWillReceiveProps : function(nextProps){
-    this.setState({
-      ...this.state,
-      selected : nextProps.selected
-    })
-  },
+  mixins: [PureRenderMixin],
   renderQuestion : function(question, i){
     return (
-      <TableRow key={question._id} selected={this.state.selected.indexOf(question._id) != -1}>
+      <TableRow key={question._id} selected={this.props.selected.indexOf(question._id) != -1}>
         <TableRowColumn>{i}</TableRowColumn>
         <TableRowColumn>{question.title}</TableRowColumn>
         <TableRowColumn>Unsolved</TableRowColumn>
@@ -46,15 +39,9 @@ const SelectQuestionsModal = React.createClass({
         title="Scrollable Dialog"
         actions={[
           <FlatButton
-            label="Cancel"
+            label="Close"
             primary={true}
             onTouchTap={onCancel}
-          />,
-          <FlatButton
-            label="Submit"
-            primary={true}
-            keyboardFocused={true}
-            onTouchTap={()=>{onSubmit(this.state.selected)}}
           />,
         ]}
         modal={false}
@@ -64,7 +51,8 @@ const SelectQuestionsModal = React.createClass({
       >
       <Table multiSelectable={true} onRowSelection={(rowsSelected)=>{
         const selected = rowsSelected.map((i)=> { return questions[i]._id});
-        return this.setState({...this.state, selected });
+        //return this.setState({selected });
+        this.props.orRowSelected(selected);
       }}>
         <TableHeader displaySelectAll={false}>
           <TableRow>
@@ -73,7 +61,7 @@ const SelectQuestionsModal = React.createClass({
             <TableHeaderColumn>Status</TableHeaderColumn>
           </TableRow>
         </TableHeader>
-        <TableBody>
+        <TableBody deselectOnClickaway={false}>
           {questions.map(this.renderQuestion)}
         </TableBody>
       </Table>
@@ -82,9 +70,8 @@ const SelectQuestionsModal = React.createClass({
   }
 });
 
-
-
 const AddQuestionModal = React.createClass({
+    mixins: [PureRenderMixin],
     getInitialState: function(){
         return {
             question : {
@@ -101,7 +88,7 @@ const AddQuestionModal = React.createClass({
     saveQuestion : function(question){
         this.props.dispatch(insertQuestion(question));
         this.props.onSubmit(question._id);
-        this.setState(this.getInitialState());
+        this.replaceState(this.getInitialState());
     },
   render : function(){
     const {open, onSubmit, onCancel } = this.props;
@@ -125,15 +112,22 @@ const AddQuestionModal = React.createClass({
         onRequestClose={onCancel}
         autoScrollBodyContent={true}
       >
-      <QuestionForm question={this.state.question} onChange={(question)=> {this.setState({...this.state, question})}} />
+      <QuestionForm question={this.state.question} onChange={(question)=> {this.setState({question})}} />
       </Dialog>
     )
   }
 });
 
+// const createAddQuestionModal = () => {
+//
+//     return AddQuestionModal
+// }
+//
+// let AddQuestionModal = createAddQuestionModal();
 
 
 const QuizForm = React.createClass({
+    mixins: [PureRenderMixin],
     getInitialState: function(){
         return {
             select_questions_modal : false,
@@ -142,8 +136,8 @@ const QuizForm = React.createClass({
         }
     },
     componentWillReceiveProps: function(nextProps){
-        if(nextProps.quiz){
-            this.setState({...this.state, quiz: nextProps.quiz});
+        if(nextProps.quiz._rev !== this.state.quiz._rev){
+            this.setState({quiz: nextProps.quiz});
         }
     },
     componentDidUpdate: function(prevProps, prevState){
@@ -156,7 +150,7 @@ const QuizForm = React.createClass({
         const question = quiz.questions[i];
         let questions = R.remove(i, 1, quiz.questions);
         questions = R.insert(i-1, question, questions);
-        this.setState({...this.state, quiz : {...quiz, questions}});
+        this.setState({quiz : {...quiz, questions}});
       }
     },
     moveDown : function(i){
@@ -165,7 +159,7 @@ const QuizForm = React.createClass({
         const question = quiz.questions[i];
         let questions = R.remove(i, 1, quiz.questions);
         questions = R.insert(i+1, question, questions);
-        this.setState({...this.state, quiz : {...quiz, questions}});
+        this.setState({quiz : {...quiz, questions}});
       }
     },
     renderQuestion : function(question, i){
@@ -185,7 +179,7 @@ const QuizForm = React.createClass({
           <TextField
             floatingLabelText="Title"
             value={this.state.quiz.title}
-            onChange={(e, title)=>{this.setState({...this.state, quiz : {...this.state.quiz, title}})}}
+            onChange={(e, title)=>{this.setState({quiz : {...this.state.quiz, title}})}}
           />
           <br />
 
@@ -205,12 +199,12 @@ const QuizForm = React.createClass({
           <br /><br />
           <RaisedButton label="Select Questions" primary={true}
             onClick={()=>{
-              this.setState({...this.state, select_questions_modal : true})
+              this.setState({select_questions_modal : true})
             }}/>
           <br /><br />
           <RaisedButton label="Add Question" primary={true}
             onClick={()=>{
-              this.setState({...this.state, add_question_modal : true})
+              this.setState({add_question_modal : true})
             }}/>
           <br /><br />
 
@@ -221,28 +215,33 @@ const QuizForm = React.createClass({
       )
   },
   renderModals: function(){
+
       return (
           <div>
               <SelectQuestionsModal questions={this.props.questions}
                 selected={this.state.quiz.questions}
                 open={this.state.select_questions_modal}
                 onCancel={()=>{
-                  this.setState({...this.state, select_questions_modal : false})
+                  this.setState({select_questions_modal : false})
                 }}
                 onSubmit={(questions)=>{
                   console.log(questions)
-                  this.setState({...this.state, quiz : {...this.state.quiz, questions}, select_questions_modal : false})
+                  this.setState({quiz : {...this.state.quiz, questions}, select_questions_modal : false})
+                }}
+                orRowSelected={(questions)=>{
+                    this.setState({quiz : {...this.state.quiz, questions}})
                 }} />
 
               <AddQuestionModal
                 open={this.state.add_question_modal}
                 dispatch={this.props.dispatch}
                 onCancel={()=>{
-                  this.setState({...this.state, add_question_modal : false})
+                  this.setState({add_question_modal : false})
                 }}
                 onSubmit={(question_id)=>{
+                    console.log(question_id)
                   const questions = [...this.state.quiz.questions, question_id];
-                  this.setState({...this.state,  quiz : {...this.state.quiz, questions}, add_question_modal : false})
+                  this.setState({ quiz : {...this.state.quiz, questions}, add_question_modal : false})
                 }} />
           </div>
       )

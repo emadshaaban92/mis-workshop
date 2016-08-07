@@ -42,7 +42,7 @@ const Question = React.createClass({
     },
     componentWillReceiveProps: function(nextProps){
         if(nextProps.answer){
-            this.setState({...this.state, answer: nextProps.answer});
+            this.setState({answer: nextProps.answer});
         }
     },
     saveAnswer: function(){
@@ -59,7 +59,7 @@ const Question = React.createClass({
         return (
             <div style={{width: '80%'}}>
                 <QuestionView question={question} answer={answer}
-                    onChange={(answer)=> {this.setState({...this.state, answer})}} />
+                    onChange={(answer)=> {this.setState({answer})}} />
                 <RaisedButton label="Save" primary={true} disabled={answer.submited || !answer.value}
                     style={{marginRight: 12}} onClick={this.saveAnswer}/>
                 <RaisedButton label="Submit" primary={true} disabled={answer.submited || !answer.value}

@@ -30,7 +30,7 @@ const AddQuestion = React.createClass({
     render : function(){
         return (
             <div>
-                <QuestionForm question={this.state.question} onChange={(question)=> {this.setState({...this.state, question})}} />
+                <QuestionForm question={this.state.question} onChange={(question)=> {this.setState({question})}} />
                 <RaisedButton label="Save Question" primary={true}
                       onClick={this.saveQuestion}/>
             </div>

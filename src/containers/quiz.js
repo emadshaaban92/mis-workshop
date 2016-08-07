@@ -34,7 +34,7 @@ const Quiz = React.createClass({
     },
     componentWillReceiveProps: function(nextProps){
         if(nextProps.answers){
-            this.setState({...this.state, answers: nextProps.answers});
+            this.setState({answers: nextProps.answers});
         }
     },
     onClickLive: function(){
@@ -53,7 +53,7 @@ const Quiz = React.createClass({
     onChangeAnswer: function(answer, i){
         let {answers} = this.state;
         answers = R.update(i, answer, answers);
-        this.setState({...this.state, answers});
+        this.setState({answers});
 
     },
     onSave: function(){

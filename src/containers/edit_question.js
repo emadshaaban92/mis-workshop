@@ -16,7 +16,7 @@ const EditQuestion = React.createClass({
     },
     componentWillReceiveProps: function(nextProps){
         if(nextProps.question){
-            this.setState({...this.state, question: nextProps.question});
+            this.setState({question: nextProps.question});
         }
     },
     saveQuestion : function(question){
@@ -26,7 +26,7 @@ const EditQuestion = React.createClass({
     render : function(){
         return (
             <div>
-                <QuestionForm question={this.state.question} onChange={(question)=> {this.setState({...this.state, question})}} />
+                <QuestionForm question={this.state.question} onChange={(question)=> {this.setState({question})}} />
                 <RaisedButton label="Save Question" primary={true}
                       onClick={()=>{this.saveQuestion(this.state.question)}}/>
             </div>

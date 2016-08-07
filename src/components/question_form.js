@@ -16,7 +16,7 @@ const QuestionFormInput = (props) => {
           onChange={(e, new_input)=>{
               const question = {...form.state.question};
               question[name] = new_input;
-              form.setState({...form.state, question});
+              form.setState({question});
           }}
           style={{width: '556px'}}
         />
@@ -31,7 +31,7 @@ const QuestionForm = React.createClass({
     },
     componentWillReceiveProps: function(nextProps){
         if(nextProps.question){
-            this.setState({...this.state, question: nextProps.question});
+            this.setState({question: nextProps.question});
         }
     },
     componentDidUpdate: function(prevProps, prevState){
@@ -41,7 +41,7 @@ const QuestionForm = React.createClass({
     addChoice : function(){
         const {question} = this.state;
         const {choices} = question;
-        this.setState({...this.state, question : {...question, choices : [...choices, '']}});
+        this.setState({question : {...question, choices : [...choices, '']}});
     },
     renderChoice : function(choice, i){
         return (
@@ -52,7 +52,7 @@ const QuestionForm = React.createClass({
               onChange={(e, ch)=>{
                 let {question} = this.state;
                 const choices = R.update(i, ch, question.choices);
-                this.setState({...this.state, question : {...question, choices}});
+                this.setState({question : {...question, choices}});
               }}/>
             <br />
           </div>
@@ -80,7 +80,7 @@ const QuestionForm = React.createClass({
             <div>
               <QuestionFormInput form={this} label="Title" name="title" />
               <br />
-                <SelectField value={question.kind} onChange={(e, i, kind)=>{this.setState({...this.satet, question : {...question, kind}})}}>
+                <SelectField value={question.kind} onChange={(e, i, kind)=>{this.setState({question : {...question, kind}})}}>
                   <MenuItem value={'choose_single'} primaryText="Choose Single" />
                   <MenuItem value={'choose_multi'} primaryText="Choose Multi" />
                   <MenuItem value={'true_false'} primaryText="True or False" />

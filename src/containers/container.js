@@ -33,7 +33,7 @@ const Container = React.createClass({
     };
   },
   toggleDrawer : function(){
-    this.setState({...this.state, drawerActive : !this.state.drawerActive});
+    this.setState({drawerActive : !this.state.drawerActive});
   },
   resetRoute : function(){
     this.props.dispatch(resetRoute());

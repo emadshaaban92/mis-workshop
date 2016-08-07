@@ -23,7 +23,7 @@ const QuizView = React.createClass({
     },
     componentWillReceiveProps: function(nextProps){
         if(nextProps.answers){
-            this.setState({...this.state, answers: nextProps.answers});
+            this.setState({answers: nextProps.answers});
         }
     },
     handleNext : function(){

@@ -6,7 +6,7 @@ import { combineReducers } from 'redux'
 function questions(state=[], action){
   switch (action.type) {
     case types.INSERT_QUESTION:
-      return [action.question, ...state]
+      return [...state, action.question]
     case types.UPDATE_QUESTION:
       return state.map((q)=> { return q._id == action.question._id ? action.question : q})
     case types.REMOVE_QUESTION:
@@ -19,7 +19,7 @@ function questions(state=[], action){
 function answers(state=[], action){
   switch (action.type) {
     case types.INSERT_ANSWER:
-      return [action.answer, ...state]
+      return [...state, action.answer]
     case types.UPDATE_ANSWER:
       return state.map((ans)=> { return ans._id == action.answer._id ? action.answer : ans})
     case types.REMOVE_ANSWER:
