@@ -33,6 +33,19 @@ const Quiz = React.createClass({
       };
     },
     componentWillReceiveProps: function(nextProps){
+        if(nextProps.questions !== this.props.questions){
+            const answers = nextProps.questions.map((question)=>{
+                return this.state.answers.find((ans)=> {return ans.question_id === question._id}) || {
+                    _id : "answer_" + uuid.v1(),
+                    question_id : question._id,
+                    user : localStorage.getItem("username"),
+                    type : "answer",
+                    value : question.kind === 'choose_multi' ? R.repeat(false, question.choices.length) : '',
+                    submited : false
+                }
+            });
+            return this.setState({answers});
+        }
         if(nextProps.answers){
             this.setState({answers: nextProps.answers});
         }

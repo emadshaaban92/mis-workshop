@@ -92602,6 +92602,23 @@ var Quiz = _react2.default.createClass({
         };
     },
     componentWillReceiveProps: function componentWillReceiveProps(nextProps) {
+        var _this = this;
+
+        if (nextProps.questions !== this.props.questions) {
+            var answers = nextProps.questions.map(function (question) {
+                return _this.state.answers.find(function (ans) {
+                    return ans.question_id === question._id;
+                }) || {
+                    _id: "answer_" + _nodeUuid2.default.v1(),
+                    question_id: question._id,
+                    user: localStorage.getItem("username"),
+                    type: "answer",
+                    value: question.kind === 'choose_multi' ? _ramda2.default.repeat(false, question.choices.length) : '',
+                    submited: false
+                };
+            });
+            return this.setState({ answers: answers });
+        }
         if (nextProps.answers) {
             this.setState({ answers: nextProps.answers });
         }
@@ -92629,17 +92646,6 @@ var Quiz = _react2.default.createClass({
         this.setState({ answers: answers });
     },
     onSave: function onSave() {
-        var _this = this;
-
-        var answers = this.state.answers;
-
-        answers.filter(function (answer) {
-            return answer.value;
-        }).forEach(function (answer) {
-            _this.props.dispatch((0, _action_creators.upsertAnswer)(answer));
-        });
-    },
-    onSubmit: function onSubmit() {
         var _this2 = this;
 
         var answers = this.state.answers;
@@ -92647,7 +92653,18 @@ var Quiz = _react2.default.createClass({
         answers.filter(function (answer) {
             return answer.value;
         }).forEach(function (answer) {
-            _this2.props.dispatch((0, _action_creators.upsertAnswer)(_extends({}, answer, { submited: true })));
+            _this2.props.dispatch((0, _action_creators.upsertAnswer)(answer));
+        });
+    },
+    onSubmit: function onSubmit() {
+        var _this3 = this;
+
+        var answers = this.state.answers;
+
+        answers.filter(function (answer) {
+            return answer.value;
+        }).forEach(function (answer) {
+            _this3.props.dispatch((0, _action_creators.upsertAnswer)(_extends({}, answer, { submited: true })));
         });
     },
     renderForStudent: function renderForStudent() {
