@@ -92604,24 +92604,27 @@ var Quiz = _react2.default.createClass({
     componentWillReceiveProps: function componentWillReceiveProps(nextProps) {
         var _this = this;
 
-        if (nextProps.questions !== this.props.questions) {
-            var answers = nextProps.questions.map(function (question) {
-                return _this.state.answers.find(function (ans) {
-                    return ans.question_id === question._id;
-                }) || {
-                    _id: "answer_" + _nodeUuid2.default.v1(),
-                    question_id: question._id,
-                    user: localStorage.getItem("username"),
-                    type: "answer",
-                    value: question.kind === 'choose_multi' ? _ramda2.default.repeat(false, question.choices.length) : '',
-                    submited: false
-                };
+        var answers = nextProps.questions.map(function (question) {
+            return _this.state.answers.find(function (ans) {
+                return ans.question_id === question._id;
+            }) || {
+                _id: "answer_" + _nodeUuid2.default.v1(),
+                question_id: question._id,
+                user: localStorage.getItem("username"),
+                type: "answer",
+                value: question.kind === 'choose_multi' ? _ramda2.default.repeat(false, question.choices.length) : '',
+                submited: false
+            };
+        });
+        this.setState({ answers: answers }, function () {
+            var answers = _this.state.answers.map(function (answer) {
+                var updated_answer = nextProps.answers.find(function (ans) {
+                    return ans ? ans._id === answer._id & ans._rev !== answer._rev : ans;
+                });
+                return updated_answer || answer;
             });
-            return this.setState({ answers: answers });
-        }
-        if (nextProps.answers) {
-            this.setState({ answers: nextProps.answers });
-        }
+            _this.setState({ answers: answers });
+        });
     },
     onClickLive: function onClickLive() {
         var _props = this.props;

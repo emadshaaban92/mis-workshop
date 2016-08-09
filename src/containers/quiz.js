@@ -33,22 +33,24 @@ const Quiz = React.createClass({
       };
     },
     componentWillReceiveProps: function(nextProps){
-        if(nextProps.questions !== this.props.questions){
-            const answers = nextProps.questions.map((question)=>{
-                return this.state.answers.find((ans)=> {return ans.question_id === question._id}) || {
-                    _id : "answer_" + uuid.v1(),
-                    question_id : question._id,
-                    user : localStorage.getItem("username"),
-                    type : "answer",
-                    value : question.kind === 'choose_multi' ? R.repeat(false, question.choices.length) : '',
-                    submited : false
-                }
-            });
-            return this.setState({answers});
-        }
-        if(nextProps.answers){
-            this.setState({answers: nextProps.answers});
-        }
+        const answers = nextProps.questions.map((question)=>{
+            return this.state.answers.find((ans)=> {return ans.question_id === question._id}) || {
+                _id : "answer_" + uuid.v1(),
+                question_id : question._id,
+                user : localStorage.getItem("username"),
+                type : "answer",
+                value : question.kind === 'choose_multi' ? R.repeat(false, question.choices.length) : '',
+                submited : false
+            }
+        });
+        this.setState({answers}, ()=>{
+            const answers = this.state.answers.map((answer)=>{
+                return nextProps.answers.find((ans)=>{return  ans ? ans._id === answer._id & ans._rev !== answer._rev : ans}) || answer;
+            })
+            this.setState({answers});
+        });
+
+
     },
     onClickLive: function(){
         const {quiz, dispatch} = this.props;
