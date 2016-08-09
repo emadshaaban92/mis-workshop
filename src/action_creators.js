@@ -68,6 +68,34 @@ export const quizStopLive = (quiz) => {
     }
 }
 
+export const insertSession = (session) => {
+    return {
+      type : types.INSERT_SESSION,
+      session
+    }
+}
+
+export const updateSession = (session) => {
+    return {
+      type : types.UPDATE_SESSION,
+      session
+    }
+}
+
+export const sessionStartLive = (session) => {
+    return {
+      type : types.UPDATE_SESSION,
+      session : {...session, live: true, start_date: session.start_date || new Date()}
+    }
+}
+
+export const sessionStopLive = (session) => {
+    return {
+      type : types.UPDATE_SESSION,
+      session : {...session, live:false, end_date: new Date()}
+    }
+}
+
 export const navtigateToQuizes = () => {
     return {
         type: types.NAVIGATE_TO,
@@ -86,6 +114,15 @@ export const navigateToQuestions = () => {
     }
 }
 
+export const navigateToSessions = () => {
+    return {
+        type: types.NAVIGATE_TO,
+        route: {
+            name: routeNames.SESSIONS
+        }
+    }
+}
+
 export const navigateToLiveQuiz = () => {
     return {
       type : types.NAVIGATE_TO,
@@ -94,6 +131,17 @@ export const navigateToLiveQuiz = () => {
       }
     }
 }
+
+export const navigateToLiveSession = () => {
+    return {
+      type : types.NAVIGATE_TO,
+      route : {
+        name : routeNames.LIVE_SESSION
+      }
+    }
+}
+
+
 
 export const resetRoute = () => {
     return {
@@ -164,5 +212,36 @@ export const navigateToEditQuiz = (quiz_id) => {
           quiz_id
         }
       }
+    }
+}
+
+export const navigateToSession = (session_id) => {
+    return {
+      type : types.NAVIGATE_TO,
+      route : {
+        name : routeNames.VIEW_SESSION,
+        params : {
+          session_id
+        }
+      }
+    }
+}
+
+export const navigateToAddSession = () => {
+    return {
+      type : types.NAVIGATE_TO,
+      route : {
+        name : routeNames.ADD_SESSION,
+      }
+    }
+}
+
+export const addQuizToSession = (quiz_id, session)=> {
+    return {
+        type: types.UPDATE_SESSION,
+        session: {
+            ...session,
+            quizes: [...session.quizes, {id: quiz_id, live: false}]
+        }
     }
 }

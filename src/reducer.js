@@ -32,7 +32,7 @@ function answers(state=[], action){
 function quizes(state=[], action){
   switch (action.type) {
     case types.INSERT_QUIZ:
-      return [action.quiz, ...state]
+      return [...state, action.quiz]
     case types.UPDATE_QUIZ:
       return state.map((q)=> { return q._id == action.quiz._id ? action.quiz : q})
     case types.REMOVE_QUIZ:
@@ -42,14 +42,27 @@ function quizes(state=[], action){
   }
 }
 
+function sessions(state=[], action){
+  switch (action.type) {
+    case types.INSERT_SESSION:
+      return [...state, action.session]
+    case types.UPDATE_SESSION:
+      return state.map((s)=> { return s._id == action.session._id ? action.session : s})
+    case types.REMOVE_SESSION:
+      return state.filter((s)=> { return s._id != action.id})
+    default:
+      return state
+  }
+}
+
 function courses(state=[], action){
   switch (action.type) {
     case types.INSERT_COURSE:
-      return [action.course, ...state]
+      return [...state, action.course]
     case types.UPDATE_COURSE:
       return state.map((c)=> { return c._id == action.course._id ? action.course : c})
     case types.REMOVE_COURSE:
-      return state.filter((q)=> { return q._id != action.id})
+      return state.filter((c)=> { return c._id != action.id})
     default:
       return state
   }
@@ -72,6 +85,7 @@ export default combineReducers({
   questions,
   answers,
   quizes,
+  sessions,
   courses,
   history
 });

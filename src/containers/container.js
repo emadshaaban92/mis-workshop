@@ -9,7 +9,7 @@ import MenuItem from 'material-ui/MenuItem';
 import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
 import FlatButton from 'material-ui/FlatButton';
 
-import {navtigateToQuizes, navigateToQuestions, navigateToLiveQuiz, resetRoute} from '../action_creators';
+import {navtigateToQuizes, navigateToQuestions, navigateToSessions, navigateToLiveQuiz, resetRoute} from '../action_creators';
 
 import Router from './router';
 import SelectCourse from './select_course';
@@ -68,6 +68,11 @@ const Container = React.createClass({
           this.props.dispatch(navigateToQuestions());
           this.toggleDrawer();
         }}>Questions</MenuItem>
+
+        <MenuItem onTouchTap={()=>{
+          this.props.dispatch(navigateToSessions());
+          this.toggleDrawer();
+        }}>Sessions</MenuItem>
 
         <MenuItem onTouchTap={()=>{
           this.props.dispatch(navigateToLiveQuiz());

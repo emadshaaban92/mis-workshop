@@ -90290,7 +90290,7 @@ function extend() {
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.navigateToEditQuiz = exports.navigateToAddQuiz = exports.navigateToQuiz = exports.navigateToEditQuestion = exports.navigateToAddQuestion = exports.navigateToQuestion = exports.resetRoute = exports.navigateToLiveQuiz = exports.navigateToQuestions = exports.navtigateToQuizes = exports.quizStopLive = exports.quizToggleLive = exports.updateQuiz = exports.insertQuiz = exports.upsertAnswer = exports.updateAnswer = exports.insertAnswer = exports.updateQuestion = exports.insertQuestion = undefined;
+exports.addQuizToSession = exports.navigateToAddSession = exports.navigateToSession = exports.navigateToEditQuiz = exports.navigateToAddQuiz = exports.navigateToQuiz = exports.navigateToEditQuestion = exports.navigateToAddQuestion = exports.navigateToQuestion = exports.resetRoute = exports.navigateToLiveSession = exports.navigateToLiveQuiz = exports.navigateToSessions = exports.navigateToQuestions = exports.navtigateToQuizes = exports.sessionStopLive = exports.sessionStartLive = exports.updateSession = exports.insertSession = exports.quizStopLive = exports.quizToggleLive = exports.updateQuiz = exports.insertQuiz = exports.upsertAnswer = exports.updateAnswer = exports.insertAnswer = exports.updateQuestion = exports.insertQuestion = undefined;
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
@@ -90303,6 +90303,8 @@ var _routeNames = require('./constants/routeNames');
 var routeNames = _interopRequireWildcard(_routeNames);
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
 var insertQuestion = exports.insertQuestion = function insertQuestion(question) {
     return {
@@ -90368,6 +90370,34 @@ var quizStopLive = exports.quizStopLive = function quizStopLive(quiz) {
     };
 };
 
+var insertSession = exports.insertSession = function insertSession(session) {
+    return {
+        type: types.INSERT_SESSION,
+        session: session
+    };
+};
+
+var updateSession = exports.updateSession = function updateSession(session) {
+    return {
+        type: types.UPDATE_SESSION,
+        session: session
+    };
+};
+
+var sessionStartLive = exports.sessionStartLive = function sessionStartLive(session) {
+    return {
+        type: types.UPDATE_SESSION,
+        session: _extends({}, session, { live: true, start_date: session.start_date || new Date() })
+    };
+};
+
+var sessionStopLive = exports.sessionStopLive = function sessionStopLive(session) {
+    return {
+        type: types.UPDATE_SESSION,
+        session: _extends({}, session, { live: false, end_date: new Date() })
+    };
+};
+
 var navtigateToQuizes = exports.navtigateToQuizes = function navtigateToQuizes() {
     return {
         type: types.NAVIGATE_TO,
@@ -90386,11 +90416,29 @@ var navigateToQuestions = exports.navigateToQuestions = function navigateToQuest
     };
 };
 
+var navigateToSessions = exports.navigateToSessions = function navigateToSessions() {
+    return {
+        type: types.NAVIGATE_TO,
+        route: {
+            name: routeNames.SESSIONS
+        }
+    };
+};
+
 var navigateToLiveQuiz = exports.navigateToLiveQuiz = function navigateToLiveQuiz() {
     return {
         type: types.NAVIGATE_TO,
         route: {
             name: routeNames.LIVE_QUIZ
+        }
+    };
+};
+
+var navigateToLiveSession = exports.navigateToLiveSession = function navigateToLiveSession() {
+    return {
+        type: types.NAVIGATE_TO,
+        route: {
+            name: routeNames.LIVE_SESSION
         }
     };
 };
@@ -90467,7 +90515,37 @@ var navigateToEditQuiz = exports.navigateToEditQuiz = function navigateToEditQui
     };
 };
 
-},{"./constants/ActionTypes":634,"./constants/routeNames":635}],627:[function(require,module,exports){
+var navigateToSession = exports.navigateToSession = function navigateToSession(session_id) {
+    return {
+        type: types.NAVIGATE_TO,
+        route: {
+            name: routeNames.VIEW_SESSION,
+            params: {
+                session_id: session_id
+            }
+        }
+    };
+};
+
+var navigateToAddSession = exports.navigateToAddSession = function navigateToAddSession() {
+    return {
+        type: types.NAVIGATE_TO,
+        route: {
+            name: routeNames.ADD_SESSION
+        }
+    };
+};
+
+var addQuizToSession = exports.addQuizToSession = function addQuizToSession(quiz_id, session) {
+    return {
+        type: types.UPDATE_SESSION,
+        session: _extends({}, session, {
+            quizes: [].concat(_toConsumableArray(session.quizes), [{ id: quiz_id, live: false }])
+        })
+    };
+};
+
+},{"./constants/ActionTypes":635,"./constants/routeNames":636}],627:[function(require,module,exports){
 'use strict';
 
 var _react = require('react');
@@ -90549,7 +90627,7 @@ var App = function App() {
 var app = document.getElementById('app');
 _reactDom2.default.render(_react2.default.createElement(App, null), app);
 
-},{"./containers/container":638,"./login":649,"./store":651,"material-ui/styles/MuiThemeProvider":361,"react":579,"react-dom":415,"react-redux":419,"react-tap-event-plugin":429}],628:[function(require,module,exports){
+},{"./containers/container":640,"./login":653,"./store":655,"material-ui/styles/MuiThemeProvider":361,"react":579,"react-dom":415,"react-redux":419,"react-tap-event-plugin":429}],628:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -91656,6 +91734,91 @@ exports.default = QuizView;
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+var _react = require('react');
+
+var _react2 = _interopRequireDefault(_react);
+
+var _ramda = require('ramda');
+
+var _ramda2 = _interopRequireDefault(_ramda);
+
+var _nodeUuid = require('node-uuid');
+
+var _nodeUuid2 = _interopRequireDefault(_nodeUuid);
+
+var _TextField = require('material-ui/TextField');
+
+var _TextField2 = _interopRequireDefault(_TextField);
+
+var _RaisedButton = require('material-ui/RaisedButton');
+
+var _RaisedButton2 = _interopRequireDefault(_RaisedButton);
+
+var _SelectField = require('material-ui/SelectField');
+
+var _SelectField2 = _interopRequireDefault(_SelectField);
+
+var _MenuItem = require('material-ui/MenuItem');
+
+var _MenuItem2 = _interopRequireDefault(_MenuItem);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var SessionFormInput = function SessionFormInput(props) {
+    var form = props.form;
+    var label = props.label;
+    var name = props.name;
+
+    return _react2.default.createElement(_TextField2.default, _extends({}, props, {
+        floatingLabelText: label,
+        value: form.state.session[name],
+        onChange: function onChange(e, new_input) {
+            var session = _extends({}, form.state.session);
+            session[name] = new_input;
+            form.setState({ session: session });
+        },
+        style: { width: '556px' }
+    }));
+};
+
+var SessionForm = _react2.default.createClass({
+    displayName: 'SessionForm',
+
+    getInitialState: function getInitialState() {
+        return {
+            session: this.props.session
+        };
+    },
+    componentWillReceiveProps: function componentWillReceiveProps(nextProps) {
+        if (nextProps.session) {
+            this.setState({ session: nextProps.session });
+        }
+    },
+    componentDidUpdate: function componentDidUpdate(prevProps, prevState) {
+        if (prevState.session !== this.state.session) this.props.onChange(this.state.session);
+    },
+    render: function render() {
+        var session = this.state.session;
+
+        return _react2.default.createElement(
+            'div',
+            null,
+            _react2.default.createElement(SessionFormInput, { form: this, label: 'Title', name: 'title' })
+        );
+    }
+});
+
+exports.default = SessionForm;
+
+},{"material-ui/MenuItem":305,"material-ui/RaisedButton":312,"material-ui/SelectField":314,"material-ui/TextField":344,"node-uuid":393,"ramda":410,"react":579}],635:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
   value: true
 });
 var INSERT_QUESTION = exports.INSERT_QUESTION = 'INSERT_QUESTION';
@@ -91670,6 +91833,10 @@ var INSERT_QUIZ = exports.INSERT_QUIZ = 'INSERT_QUIZ';
 var REMOVE_QUIZ = exports.REMOVE_QUIZ = "REMOVE_QUIZ";
 var UPDATE_QUIZ = exports.UPDATE_QUIZ = 'UPDATE_QUIZ';
 
+var INSERT_SESSION = exports.INSERT_SESSION = 'INSERT_SESSION';
+var REMOVE_SESSION = exports.REMOVE_SESSION = "REMOVE_SESSION";
+var UPDATE_SESSION = exports.UPDATE_SESSION = 'UPDATE_SESSION';
+
 var INSERT_COURSE = exports.INSERT_COURSE = 'INSERT_COURSE';
 var REMOVE_COURSE = exports.REMOVE_COURSE = "REMOVE_COURSE";
 var UPDATE_COURSE = exports.UPDATE_COURSE = 'UPDATE_COURSE';
@@ -91678,7 +91845,7 @@ var NAVIGATE_TO = exports.NAVIGATE_TO = 'NAVIGATE_TO';
 var GO_BACK = exports.GO_BACK = 'GO_BACK';
 var RESET_ROUTE = exports.RESET_ROUTE = 'RESET_ROUTE';
 
-},{}],635:[function(require,module,exports){
+},{}],636:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -91698,7 +91865,13 @@ var EDIT_QUIZ = exports.EDIT_QUIZ = 'EDIT_QUIZ';
 
 var LIVE_QUIZ = exports.LIVE_QUIZ = 'LIVE_QUIZ';
 
-},{}],636:[function(require,module,exports){
+var SESSIONS = exports.SESSIONS = 'SESSIONS';
+var VIEW_SESSION = exports.VIEW_SESSION = 'VIEW_SESSION';
+var ADD_SESSION = exports.ADD_SESSION = 'ADD_SESSION';
+
+var LIVE_SESSION = exports.LIVE_SESSION = 'LIVE_SESSION';
+
+},{}],637:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -91766,7 +91939,7 @@ var AddQuestion = _react2.default.createClass({
 
 exports.default = (0, _reactRedux.connect)()(AddQuestion);
 
-},{"../action_creators":626,"../components/question_form":630,"material-ui/RaisedButton":312,"node-uuid":393,"react":579,"react-redux":419}],637:[function(require,module,exports){
+},{"../action_creators":626,"../components/question_form":630,"material-ui/RaisedButton":312,"node-uuid":393,"react":579,"react-redux":419}],638:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -91812,7 +91985,7 @@ var AddQuiz = _react2.default.createClass({
         var quiz = this.state.quiz;
 
         this.props.dispatch((0, _action_creators.insertQuiz)(quiz));
-        this.props.afterInsert(quiz);
+        this.props.afterInsert(quiz._id);
     },
     render: function render() {
         var _this = this;
@@ -91836,7 +92009,77 @@ var AddQuiz = _react2.default.createClass({
 
 exports.default = (0, _reactRedux.connect)()(AddQuiz);
 
-},{"../action_creators":626,"../components/quiz_form":632,"material-ui/RaisedButton":312,"node-uuid":393,"react":579,"react-redux":419}],638:[function(require,module,exports){
+},{"../action_creators":626,"../components/quiz_form":632,"material-ui/RaisedButton":312,"node-uuid":393,"react":579,"react-redux":419}],639:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _react = require('react');
+
+var _react2 = _interopRequireDefault(_react);
+
+var _reactRedux = require('react-redux');
+
+var _session_form = require('../components/session_form');
+
+var _session_form2 = _interopRequireDefault(_session_form);
+
+var _RaisedButton = require('material-ui/RaisedButton');
+
+var _RaisedButton2 = _interopRequireDefault(_RaisedButton);
+
+var _action_creators = require('../action_creators');
+
+var _nodeUuid = require('node-uuid');
+
+var _nodeUuid2 = _interopRequireDefault(_nodeUuid);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var AddSession = _react2.default.createClass({
+    displayName: 'AddSession',
+
+    getInitialState: function getInitialState() {
+        return {
+            session: {
+                _id: "session_" + _nodeUuid2.default.v1(),
+                title: '',
+                type: "session",
+                discussions: [],
+                quizes: [],
+                questions: [],
+                files: [],
+                live: false,
+                public: false
+            }
+        };
+    },
+    saveSession: function saveSession() {
+        var session = this.state.session;
+
+        this.props.dispatch((0, _action_creators.insertSession)(session));
+        this.props.afterInsert(session._id);
+    },
+    render: function render() {
+        var _this = this;
+
+        return _react2.default.createElement(
+            'div',
+            null,
+            _react2.default.createElement(_session_form2.default, { session: this.state.session, onChange: function onChange(session) {
+                    _this.setState({ session: session });
+                } }),
+            _react2.default.createElement(_RaisedButton2.default, { label: 'Save Session', primary: true,
+                onClick: this.saveSession })
+        );
+    }
+});
+
+exports.default = (0, _reactRedux.connect)()(AddSession);
+
+},{"../action_creators":626,"../components/session_form":634,"material-ui/RaisedButton":312,"node-uuid":393,"react":579,"react-redux":419}],640:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -91957,6 +92200,14 @@ var Container = _react2.default.createClass({
       _react2.default.createElement(
         _MenuItem2.default,
         { onTouchTap: function onTouchTap() {
+            _this.props.dispatch((0, _action_creators.navigateToSessions)());
+            _this.toggleDrawer();
+          } },
+        'Sessions'
+      ),
+      _react2.default.createElement(
+        _MenuItem2.default,
+        { onTouchTap: function onTouchTap() {
             _this.props.dispatch((0, _action_creators.navigateToLiveQuiz)());
             _this.toggleDrawer();
           } },
@@ -92011,7 +92262,7 @@ var Container = _react2.default.createClass({
 
 exports.default = (0, _reactRedux.connect)()(Container);
 
-},{"../action_creators":626,"./router":647,"./select_course":648,"material-ui/AppBar":281,"material-ui/Drawer":287,"material-ui/FlatButton":292,"material-ui/IconButton":296,"material-ui/IconMenu":298,"material-ui/MenuItem":305,"material-ui/svg-icons/navigation/more-vert":378,"react":579,"react-redux":419}],639:[function(require,module,exports){
+},{"../action_creators":626,"./router":649,"./select_course":650,"material-ui/AppBar":281,"material-ui/Drawer":287,"material-ui/FlatButton":292,"material-ui/IconButton":296,"material-ui/IconMenu":298,"material-ui/MenuItem":305,"material-ui/svg-icons/navigation/more-vert":378,"react":579,"react-redux":419}],641:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -92080,7 +92331,7 @@ exports.default = (0, _reactRedux.connect)(function (state, _ref) {
     };
 })(EditQuestion);
 
-},{"../action_creators":626,"../components/question_form":630,"material-ui/RaisedButton":312,"react":579,"react-redux":419}],640:[function(require,module,exports){
+},{"../action_creators":626,"../components/question_form":630,"material-ui/RaisedButton":312,"react":579,"react-redux":419}],642:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -92155,7 +92406,7 @@ exports.default = (0, _reactRedux.connect)(function (state, _ref) {
     };
 })(EditQuiz);
 
-},{"../action_creators":626,"../components/quiz_form":632,"material-ui/RaisedButton":312,"react":579,"react-redux":419}],641:[function(require,module,exports){
+},{"../action_creators":626,"../components/quiz_form":632,"material-ui/RaisedButton":312,"react":579,"react-redux":419}],643:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -92195,7 +92446,7 @@ exports.default = (0, _reactRedux.connect)(function (state) {
   };
 })(Home);
 
-},{"react":579,"react-redux":419}],642:[function(require,module,exports){
+},{"react":579,"react-redux":419}],644:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -92254,7 +92505,7 @@ exports.default = (0, _reactRedux.connect)(function (state) {
   };
 })(LiveQuiz);
 
-},{"../constants/ActionTypes":634,"../constants/routeNames":635,"./quiz":645,"material-ui/RaisedButton":312,"react":579,"react-redux":419}],643:[function(require,module,exports){
+},{"../constants/ActionTypes":635,"../constants/routeNames":636,"./quiz":647,"material-ui/RaisedButton":312,"react":579,"react-redux":419}],645:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -92433,7 +92684,7 @@ exports.default = (0, _reactRedux.connect)(function (state, _ref) {
     };
 })(Question);
 
-},{"../action_creators":626,"../components/question_view":631,"./edit_question":639,"material-ui/FlatButton":292,"material-ui/RaisedButton":312,"material-ui/Tabs":338,"material-ui/TextField":344,"node-uuid":393,"ramda":410,"react":579,"react-redux":419}],644:[function(require,module,exports){
+},{"../action_creators":626,"../components/question_view":631,"./edit_question":641,"material-ui/FlatButton":292,"material-ui/RaisedButton":312,"material-ui/Tabs":338,"material-ui/TextField":344,"node-uuid":393,"ramda":410,"react":579,"react-redux":419}],646:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -92535,7 +92786,7 @@ exports.default = (0, _reactRedux.connect)(function (state) {
   return { questions: state.questions };
 })(Questions);
 
-},{"../action_creators":626,"../components/add_icon":628,"material-ui/Table":333,"react":579,"react-redux":419}],645:[function(require,module,exports){
+},{"../action_creators":626,"../components/add_icon":628,"material-ui/Table":333,"react":579,"react-redux":419}],647:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -92618,10 +92869,9 @@ var Quiz = _react2.default.createClass({
         });
         this.setState({ answers: answers }, function () {
             var answers = _this.state.answers.map(function (answer) {
-                var updated_answer = nextProps.answers.find(function (ans) {
+                return nextProps.answers.find(function (ans) {
                     return ans ? ans._id === answer._id & ans._rev !== answer._rev : ans;
-                });
-                return updated_answer || answer;
+                }) || answer;
             });
             _this.setState({ answers: answers });
         });
@@ -92743,7 +92993,7 @@ exports.default = (0, _reactRedux.connect)(function (state, _ref) {
     };
 })(Quiz);
 
-},{"../action_creators":626,"../components/quiz_view":633,"./edit_quiz":640,"./question":643,"material-ui/RaisedButton":312,"material-ui/Tabs":338,"node-uuid":393,"ramda":410,"react":579,"react-redux":419}],646:[function(require,module,exports){
+},{"../action_creators":626,"../components/quiz_view":633,"./edit_quiz":642,"./question":645,"material-ui/RaisedButton":312,"material-ui/Tabs":338,"node-uuid":393,"ramda":410,"react":579,"react-redux":419}],648:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -92844,7 +93094,7 @@ exports.default = (0, _reactRedux.connect)(function (state) {
   return { quizes: state.quizes };
 })(Quizes);
 
-},{"../action_creators":626,"../components/add_icon":628,"material-ui/Table":333,"react":579,"react-redux":419}],647:[function(require,module,exports){
+},{"../action_creators":626,"../components/add_icon":628,"material-ui/Table":333,"react":579,"react-redux":419}],649:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -92899,6 +93149,18 @@ var _quiz = require('./quiz');
 
 var _quiz2 = _interopRequireDefault(_quiz);
 
+var _add_session = require('./add_session');
+
+var _add_session2 = _interopRequireDefault(_add_session);
+
+var _sessions = require('./sessions');
+
+var _sessions2 = _interopRequireDefault(_sessions);
+
+var _session = require('./session');
+
+var _session2 = _interopRequireDefault(_session);
+
 var _live_quiz = require('./live_quiz');
 
 var _live_quiz2 = _interopRequireDefault(_live_quiz);
@@ -92942,6 +93204,14 @@ var Router = function Router(_ref) {
       return _react2.default.createElement(_add_quiz2.default, { afterInsert: function afterInsert() {
           dispatch((0, _action_creators.navtigateToQuizes)());
         } });
+    case routeNames.SESSIONS:
+      return _react2.default.createElement(_sessions2.default, null);
+    case routeNames.ADD_SESSION:
+      return _react2.default.createElement(_add_session2.default, { afterInsert: function afterInsert() {
+          dispatch(navtigateToSessions());
+        } });
+    case routeNames.VIEW_SESSION:
+      return _react2.default.createElement(_session2.default, route.params);
     default:
       return _react2.default.createElement(
         'div',
@@ -92959,7 +93229,7 @@ exports.default = (0, _reactRedux.connect)(function (state) {
   return { route: state.history[0] };
 })(Router);
 
-},{"../action_creators":626,"../constants/routeNames":635,"./add_question":636,"./add_quiz":637,"./edit_question":639,"./edit_quiz":640,"./home":641,"./live_quiz":642,"./question":643,"./questions":644,"./quiz":645,"./quizes":646,"react":579,"react-redux":419}],648:[function(require,module,exports){
+},{"../action_creators":626,"../constants/routeNames":636,"./add_question":637,"./add_quiz":638,"./add_session":639,"./edit_question":641,"./edit_quiz":642,"./home":643,"./live_quiz":644,"./question":645,"./questions":646,"./quiz":647,"./quizes":648,"./session":651,"./sessions":652,"react":579,"react-redux":419}],650:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -93053,7 +93323,231 @@ exports.default = (0, _reactRedux.connect)(function (state) {
   };
 })(SelectCourse);
 
-},{"material-ui/Table":333,"react":579,"react-redux":419}],649:[function(require,module,exports){
+},{"material-ui/Table":333,"react":579,"react-redux":419}],651:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _react = require('react');
+
+var _react2 = _interopRequireDefault(_react);
+
+var _reactRedux = require('react-redux');
+
+var _Tabs = require('material-ui/Tabs');
+
+var _nodeUuid = require('node-uuid');
+
+var _nodeUuid2 = _interopRequireDefault(_nodeUuid);
+
+var _ramda = require('ramda');
+
+var _ramda2 = _interopRequireDefault(_ramda);
+
+var _add_quiz = require('./add_quiz');
+
+var _add_quiz2 = _interopRequireDefault(_add_quiz);
+
+var _quiz = require('./quiz');
+
+var _quiz2 = _interopRequireDefault(_quiz);
+
+var _action_creators = require('../action_creators');
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var Session = _react2.default.createClass({
+    displayName: 'Session',
+
+    renderForAuthor: function renderForAuthor() {
+        var _this = this;
+
+        return _react2.default.createElement(
+            'div',
+            { style: { width: '100%' } },
+            _react2.default.createElement(
+                'h1',
+                null,
+                this.props.session.title
+            ),
+            _react2.default.createElement(
+                'div',
+                { style: { width: '100%' } },
+                _react2.default.createElement(
+                    _Tabs.Tabs,
+                    { style: { width: '100%' } },
+                    _react2.default.createElement(_Tabs.Tab, { label: 'Discussion' }),
+                    _react2.default.createElement(
+                        _Tabs.Tab,
+                        { label: 'Quizes' },
+                        _react2.default.createElement(_add_quiz2.default, { afterInsert: function afterInsert(quiz_id) {
+                                _this.props.dispatch((0, _action_creators.addQuizToSession)(quiz_id, _this.props.session));
+                            } }),
+                        _react2.default.createElement('br', null),
+                        this.props.session.quizes.map(function (quiz) {
+                            return _react2.default.createElement(_quiz2.default, { quiz_id: quiz.id });
+                        })
+                    ),
+                    _react2.default.createElement(_Tabs.Tab, { label: 'Questions' }),
+                    _react2.default.createElement(_Tabs.Tab, { label: 'Files' })
+                )
+            )
+        );
+    },
+    renderForStudent: function renderForStudent() {
+        return _react2.default.createElement(
+            'div',
+            { style: { width: '100%' } },
+            _react2.default.createElement(
+                'h1',
+                null,
+                this.props.session.title
+            ),
+            _react2.default.createElement(
+                'div',
+                { style: { width: '100%' } },
+                _react2.default.createElement(
+                    _Tabs.Tabs,
+                    { style: { width: '100%' } },
+                    _react2.default.createElement(_Tabs.Tab, { label: 'Discussions' }),
+                    _react2.default.createElement(
+                        _Tabs.Tab,
+                        { label: 'Quizes' },
+                        this.props.session.quizes.map(function (quiz) {
+                            return _react2.default.createElement(_quiz2.default, { quiz_id: quiz.id });
+                        })
+                    ),
+                    _react2.default.createElement(_Tabs.Tab, { label: 'Questions' }),
+                    _react2.default.createElement(_Tabs.Tab, { label: 'Files' })
+                )
+            )
+        );
+    },
+    render: function render() {
+        if (localStorage.getItem('auther') === "true") {
+            return this.renderForAuthor();
+        }
+        return this.renderForStudent();
+    }
+});
+
+exports.default = (0, _reactRedux.connect)(function (state, _ref) {
+    var session_id = _ref.session_id;
+
+    var session = state.sessions.find(function (session) {
+        return session._id === session_id;
+    });
+    //const quizes = session.quizes.map((quiz)=>{return })
+    return {
+        session: session
+    };
+})(Session);
+
+},{"../action_creators":626,"./add_quiz":638,"./quiz":647,"material-ui/Tabs":338,"node-uuid":393,"ramda":410,"react":579,"react-redux":419}],652:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _react = require('react');
+
+var _react2 = _interopRequireDefault(_react);
+
+var _reactRedux = require('react-redux');
+
+var _Table = require('material-ui/Table');
+
+var _add_icon = require('../components/add_icon');
+
+var _add_icon2 = _interopRequireDefault(_add_icon);
+
+var _action_creators = require('../action_creators');
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var renderSession = function renderSession(session, i) {
+  return _react2.default.createElement(
+    _Table.TableRow,
+    { key: session._id },
+    _react2.default.createElement(
+      _Table.TableRowColumn,
+      null,
+      i
+    ),
+    _react2.default.createElement(
+      _Table.TableRowColumn,
+      null,
+      session.title
+    ),
+    _react2.default.createElement(
+      _Table.TableRowColumn,
+      null,
+      'Unsolved'
+    )
+  );
+};
+
+var renderAddIcon = function renderAddIcon(dispatch) {
+  if (localStorage.getItem('auther') === "true") {
+    return _react2.default.createElement(_add_icon2.default, { onClick: function onClick() {
+        dispatch((0, _action_creators.navigateToAddSession)());
+      } });
+  }
+};
+
+var Sessions = function Sessions(_ref) {
+  var sessions = _ref.sessions;
+  var dispatch = _ref.dispatch;
+
+  return _react2.default.createElement(
+    'div',
+    null,
+    _react2.default.createElement(
+      _Table.Table,
+      { onCellClick: function onCellClick(rowNumber) {
+          dispatch((0, _action_creators.navigateToSession)(sessions[rowNumber]._id));
+        } },
+      _react2.default.createElement(
+        _Table.TableHeader,
+        { adjustForCheckbox: false, displaySelectAll: false },
+        _react2.default.createElement(
+          _Table.TableRow,
+          null,
+          _react2.default.createElement(
+            _Table.TableHeaderColumn,
+            null,
+            '#'
+          ),
+          _react2.default.createElement(
+            _Table.TableHeaderColumn,
+            null,
+            'Title'
+          ),
+          _react2.default.createElement(
+            _Table.TableHeaderColumn,
+            null,
+            'Status'
+          )
+        )
+      ),
+      _react2.default.createElement(
+        _Table.TableBody,
+        { displayRowCheckbox: false },
+        sessions.map(renderSession)
+      )
+    ),
+    renderAddIcon(dispatch)
+  );
+};
+
+exports.default = (0, _reactRedux.connect)(function (state) {
+  return { sessions: state.sessions };
+})(Sessions);
+
+},{"../action_creators":626,"../components/add_icon":628,"material-ui/Table":333,"react":579,"react-redux":419}],653:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -93176,7 +93670,7 @@ var Login = _react2.default.createClass({
 
 exports.default = Login;
 
-},{"material-ui/RaisedButton":312,"material-ui/TextField":344,"react":579}],650:[function(require,module,exports){
+},{"material-ui/RaisedButton":312,"material-ui/TextField":344,"react":579}],654:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -93243,7 +93737,7 @@ function quizes() {
 
   switch (action.type) {
     case types.INSERT_QUIZ:
-      return [action.quiz].concat(_toConsumableArray(state));
+      return [].concat(_toConsumableArray(state), [action.quiz]);
     case types.UPDATE_QUIZ:
       return state.map(function (q) {
         return q._id == action.quiz._id ? action.quiz : q;
@@ -93257,20 +93751,40 @@ function quizes() {
   }
 }
 
+function sessions() {
+  var state = arguments.length <= 0 || arguments[0] === undefined ? [] : arguments[0];
+  var action = arguments[1];
+
+  switch (action.type) {
+    case types.INSERT_SESSION:
+      return [].concat(_toConsumableArray(state), [action.session]);
+    case types.UPDATE_SESSION:
+      return state.map(function (s) {
+        return s._id == action.session._id ? action.session : s;
+      });
+    case types.REMOVE_SESSION:
+      return state.filter(function (s) {
+        return s._id != action.id;
+      });
+    default:
+      return state;
+  }
+}
+
 function courses() {
   var state = arguments.length <= 0 || arguments[0] === undefined ? [] : arguments[0];
   var action = arguments[1];
 
   switch (action.type) {
     case types.INSERT_COURSE:
-      return [action.course].concat(_toConsumableArray(state));
+      return [].concat(_toConsumableArray(state), [action.course]);
     case types.UPDATE_COURSE:
       return state.map(function (c) {
         return c._id == action.course._id ? action.course : c;
       });
     case types.REMOVE_COURSE:
-      return state.filter(function (q) {
-        return q._id != action.id;
+      return state.filter(function (c) {
+        return c._id != action.id;
       });
     default:
       return state;
@@ -93297,11 +93811,12 @@ exports.default = (0, _redux.combineReducers)({
   questions: questions,
   answers: answers,
   quizes: quizes,
+  sessions: sessions,
   courses: courses,
   history: history
 });
 
-},{"./constants/ActionTypes":634,"./constants/routeNames":635,"redux":606}],651:[function(require,module,exports){
+},{"./constants/ActionTypes":635,"./constants/routeNames":636,"redux":606}],655:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -93414,6 +93929,32 @@ function createAppStore(user) {
             return doc.type === "quiz";
         }
     }, {
+        path: '/sessions',
+        db: localDB,
+        actions: {
+            remove: function remove(doc) {
+                return AppStore.dispatch({
+                    type: types.REMOVE_SESSION,
+                    id: doc._id
+                });
+            },
+            insert: function insert(doc) {
+                return AppStore.dispatch({
+                    type: types.INSERT_SESSION,
+                    session: doc
+                });
+            },
+            update: function update(doc) {
+                return AppStore.dispatch({
+                    type: types.UPDATE_SESSION,
+                    session: doc
+                });
+            }
+        },
+        changeFilter: function changeFilter(doc) {
+            return doc.type === "session";
+        }
+    }, {
         path: '/courses',
         db: localDB,
         actions: {
@@ -93470,4 +94011,4 @@ function createAppStore(user) {
 
 exports.default = createAppStore;
 
-},{"./constants/ActionTypes":634,"./constants/routeNames":635,"./reducer":650,"pouch-redux-middleware":400,"pouchdb/dist/pouchdb":401,"redux":606}]},{},[627]);
+},{"./constants/ActionTypes":635,"./constants/routeNames":636,"./reducer":654,"pouch-redux-middleware":400,"pouchdb/dist/pouchdb":401,"redux":606}]},{},[627]);

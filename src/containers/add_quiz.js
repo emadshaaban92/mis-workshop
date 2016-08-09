@@ -23,7 +23,7 @@ const AddQuiz = React.createClass({
     saveQuiz: function(){
         const {quiz} = this.state;
         this.props.dispatch(insertQuiz(quiz));
-        this.props.afterInsert(quiz);
+        this.props.afterInsert(quiz._id);
     },
     render: function(){
         return(

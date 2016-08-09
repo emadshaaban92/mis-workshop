@@ -15,9 +15,13 @@ import EditQuiz from './edit_quiz';
 import Quizes from './quizes';
 import Quiz from './quiz';
 
+import AddSession from './add_session';
+import Sessions from './sessions';
+import Session from './session';
+
 import LiveQuiz from './live_quiz';
 
-import {navigateToQuestions, navtigateToQuizes, navigateToQuestion, navigateToQuiz} from '../action_creators';
+import {navigateToQuestions, navtigateToQuizes, navigateToSessions, navigateToQuestion, navigateToQuiz} from '../action_creators';
 
 const Router = ({route, dispatch}) => {
   switch (route.name) {
@@ -41,6 +45,12 @@ const Router = ({route, dispatch}) => {
       return <AddQuestion afterInsert={()=>{dispatch(navigateToQuestions())}} />;
     case routeNames.ADD_QUIZ :
       return <AddQuiz afterInsert={()=>{dispatch(navtigateToQuizes())}} />;
+    case routeNames.SESSIONS:
+      return <Sessions />
+    case routeNames.ADD_SESSION:
+      return <AddSession afterInsert={()=>{dispatch(navtigateToSessions())}} />
+    case routeNames.VIEW_SESSION:
+      return <Session {...route.params} />
     default:
       return (
         <div>
