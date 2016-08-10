@@ -48,7 +48,7 @@ const Router = ({route, dispatch}) => {
     case routeNames.SESSIONS:
       return <Sessions />
     case routeNames.ADD_SESSION:
-      return <AddSession afterInsert={()=>{dispatch(navtigateToSessions())}} />
+      return <AddSession afterInsert={()=>{dispatch(navigateToSessions())}} />
     case routeNames.VIEW_SESSION:
       return <Session {...route.params} />
     default:

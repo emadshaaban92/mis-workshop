@@ -65,7 +65,7 @@ const QuestionView = React.createClass({
         if(answer._attachments){
             const names = R.keys(answer._attachments);
             console.log(names)
-            return 'http://couch.bizzotech.com/mis_workshop_v1/' + localStorage.getItem('dbName') + '/' + answer._id + '/' + names[0];
+            return 'https://couch.bizzotech.com/mis_workshop_v1/' + localStorage.getItem('dbName') + '/' + answer._id + '/' + names[0];
         }
     },
     renderAttachment: function(){

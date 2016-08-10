@@ -18,6 +18,22 @@ import Question from './question';
 
 import {addQuizToSession, addQuestionToSession, updateSession, insertMessage} from '../action_creators';
 
+const styles = {
+  button: {
+    margin: 12,
+  },
+  exampleImageInput: {
+    cursor: 'pointer',
+    position: 'absolute',
+    top: 0,
+    bottom: 0,
+    right: 0,
+    left: 0,
+    width: '100%',
+    opacity: 0,
+  },
+};
+
 const Session = React.createClass({
     getNewMessage: function(){
         return {
@@ -107,6 +123,20 @@ const Session = React.createClass({
             </div>
         )
     },
+    getAttachments: function(){
+        const {session} = this.props;
+        if(session._attachments){
+            const names = R.keys(session._attachments);
+            const files = names.map((name)=>{
+                return {
+                    name,
+                    url: 'https://couch.bizzotech.com/mis_workshop_v1/' + localStorage.getItem('dbName') + '/' + session._id + '/' + name
+                }
+            })
+            return files;
+        }
+        return [];
+    },
     renderForAuthor: function(){
         return(
             <div style={{width: '100%'}}>
@@ -167,7 +197,44 @@ const Session = React.createClass({
                           </div>
                       </Tab>
                       <Tab label="Files" >
-
+                          <RaisedButton label="Attach File" labelPosition="before" style={styles.button}>
+                            <input type="file" style={styles.exampleImageInput}
+                                onChange={(e)=>{
+                                    const file =  e.target.files[0];
+                                    const attachments = {};
+                                    attachments[file.name] = {
+                                        'content_type': file.type,
+                                        data: file
+                                    }
+                                    const session = {
+                                        ...this.props.session,
+                                        _attachments : {
+                                            ...(this.props.session._attachments || {}),
+                                            ...attachments
+                                        }
+                                    }
+                                    this.props.dispatch(updateSession(session));
+                                } }/>
+                            <br/>
+                            {this.getAttachments().map((file, i)=>{
+                                return(
+                                    <div key={i}>
+                                        <a href={file.url}>{file.name}</a> <a onClick={()=>{
+                                            const attachments = {};
+                                            attachments[file.name] = undefined;
+                                            const session = {
+                                                ...this.props.session,
+                                                _attachments : {
+                                                    ...(this.props.session._attachments || {}),
+                                                    ...attachments
+                                                }
+                                            }
+                                            this.props.dispatch(updateSession(session));
+                                        }}>delete</a>
+                                    </div>
+                                )
+                            })}
+                          </RaisedButton>
                       </Tab>
                     </Tabs>
 
@@ -224,7 +291,13 @@ const Session = React.createClass({
                           </div>
                       </Tab>
                       <Tab label="Files" >
-
+                          {this.getAttachments().map((file, i)=>{
+                              return(
+                                  <div key={i}>
+                                      <a href={file.url}>{file.name}</a>
+                                  </div>
+                              )
+                          })}
                       </Tab>
                     </Tabs>
 

@@ -91180,7 +91180,7 @@ var QuestionView = _react2.default.createClass({
         if (answer._attachments) {
             var names = _ramda2.default.keys(answer._attachments);
             console.log(names);
-            return 'http://couch.bizzotech.com/mis_workshop_v1/' + localStorage.getItem('dbName') + '/' + answer._id + '/' + names[0];
+            return 'https://couch.bizzotech.com/mis_workshop_v1/' + localStorage.getItem('dbName') + '/' + answer._id + '/' + names[0];
         }
     },
     renderAttachment: function renderAttachment() {
@@ -92254,7 +92254,7 @@ var AddSession = _react2.default.createClass({
                 discussions: [],
                 quizes: [],
                 questions: [],
-                files: [],
+                _attachments: undefined,
                 live: false,
                 public: false
             }
@@ -93412,7 +93412,7 @@ var Router = function Router(_ref) {
       return _react2.default.createElement(_sessions2.default, null);
     case routeNames.ADD_SESSION:
       return _react2.default.createElement(_add_session2.default, { afterInsert: function afterInsert() {
-          dispatch(navtigateToSessions());
+          dispatch((0, _action_creators.navigateToSessions)());
         } });
     case routeNames.VIEW_SESSION:
       return _react2.default.createElement(_session2.default, route.params);
@@ -93584,6 +93584,22 @@ var _action_creators = require('../action_creators');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+var styles = {
+    button: {
+        margin: 12
+    },
+    exampleImageInput: {
+        cursor: 'pointer',
+        position: 'absolute',
+        top: 0,
+        bottom: 0,
+        right: 0,
+        left: 0,
+        width: '100%',
+        opacity: 0
+    }
+};
+
 var Session = _react2.default.createClass({
     displayName: 'Session',
 
@@ -93715,6 +93731,21 @@ var Session = _react2.default.createClass({
             )
         );
     },
+    getAttachments: function getAttachments() {
+        var session = this.props.session;
+
+        if (session._attachments) {
+            var names = _ramda2.default.keys(session._attachments);
+            var files = names.map(function (name) {
+                return {
+                    name: name,
+                    url: 'https://couch.bizzotech.com/mis_workshop_v1/' + localStorage.getItem('dbName') + '/' + session._id + '/' + name
+                };
+            });
+            return files;
+        }
+        return [];
+    },
     renderForAuthor: function renderForAuthor() {
         var _this4 = this;
 
@@ -93809,7 +93840,52 @@ var Session = _react2.default.createClass({
                             )
                         )
                     ),
-                    _react2.default.createElement(_Tabs.Tab, { label: 'Files' })
+                    _react2.default.createElement(
+                        _Tabs.Tab,
+                        { label: 'Files' },
+                        _react2.default.createElement(
+                            _RaisedButton2.default,
+                            { label: 'Attach File', labelPosition: 'before', style: styles.button },
+                            _react2.default.createElement('input', { type: 'file', style: styles.exampleImageInput,
+                                onChange: function onChange(e) {
+                                    var file = e.target.files[0];
+                                    var attachments = {};
+                                    attachments[file.name] = {
+                                        'content_type': file.type,
+                                        data: file
+                                    };
+                                    var session = _extends({}, _this4.props.session, {
+                                        _attachments: _extends({}, _this4.props.session._attachments || {}, attachments)
+                                    });
+                                    _this4.props.dispatch((0, _action_creators.updateSession)(session));
+                                } }),
+                            _react2.default.createElement('br', null),
+                            this.getAttachments().map(function (file, i) {
+                                return _react2.default.createElement(
+                                    'div',
+                                    { key: i },
+                                    _react2.default.createElement(
+                                        'a',
+                                        { href: file.url },
+                                        file.name
+                                    ),
+                                    ' ',
+                                    _react2.default.createElement(
+                                        'a',
+                                        { onClick: function onClick() {
+                                                var attachments = {};
+                                                attachments[file.name] = undefined;
+                                                var session = _extends({}, _this4.props.session, {
+                                                    _attachments: _extends({}, _this4.props.session._attachments || {}, attachments)
+                                                });
+                                                _this4.props.dispatch((0, _action_creators.updateSession)(session));
+                                            } },
+                                        'delete'
+                                    )
+                                );
+                            })
+                        )
+                    )
                 )
             )
         );
@@ -93898,7 +93974,21 @@ var Session = _react2.default.createClass({
                             )
                         )
                     ),
-                    _react2.default.createElement(_Tabs.Tab, { label: 'Files' })
+                    _react2.default.createElement(
+                        _Tabs.Tab,
+                        { label: 'Files' },
+                        this.getAttachments().map(function (file, i) {
+                            return _react2.default.createElement(
+                                'div',
+                                { key: i },
+                                _react2.default.createElement(
+                                    'a',
+                                    { href: file.url },
+                                    file.name
+                                )
+                            );
+                        })
+                    )
                 )
             )
         );
