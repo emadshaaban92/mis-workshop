@@ -42,6 +42,19 @@ function quizes(state=[], action){
   }
 }
 
+function messages(state=[], action){
+  switch (action.type) {
+    case types.INSERT_MESSAGE:
+      return [...state, action.message]
+    case types.UPDATE_MESSAGE:
+      return state.map((m)=> { return m._id == action.message._id ? action.message : m})
+    case types.REMOVE_MESSAGE:
+      return state.filter((m)=> { return m._id != action.id})
+    default:
+      return state
+  }
+}
+
 function sessions(state=[], action){
   switch (action.type) {
     case types.INSERT_SESSION:
@@ -85,6 +98,7 @@ export default combineReducers({
   questions,
   answers,
   quizes,
+  messages,
   sessions,
   courses,
   history

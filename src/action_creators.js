@@ -255,3 +255,10 @@ export const addQuestionToSession = (question_id, session)=> {
         }
     }
 }
+
+export const insertMessage = (message)=>{
+    return {
+        type: types.INSERT_MESSAGE,
+        message
+    }
+}

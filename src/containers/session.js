@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import {Tabs, Tab} from 'material-ui/Tabs';
 import {List, ListItem} from 'material-ui/List';
 import RaisedButton from 'material-ui/RaisedButton';
+import TextField from 'material-ui/TextField';
 
 
 import uuid from 'node-uuid';
@@ -15,13 +16,24 @@ import Quiz from './quiz';
 import AddQuestion from './add_question';
 import Question from './question';
 
-import {addQuizToSession, addQuestionToSession, updateSession} from '../action_creators';
+import {addQuizToSession, addQuestionToSession, updateSession, insertMessage} from '../action_creators';
 
 const Session = React.createClass({
+    getNewMessage: function(){
+        return {
+            _id: 'message_' + uuid.v1(),
+            session_id: this.props.session._id,
+            name: localStorage.getItem('username'),
+            type: 'message',
+            anonymous: false,
+            text: ''
+        }
+    },
     getInitialState: function(){
         return {
             selected_quiz: undefined,
-            selected_question: undefined
+            selected_question: undefined,
+            new_message: this.getNewMessage()
         }
     },
     renderSelectedQuiz: function(){
@@ -72,6 +84,29 @@ const Session = React.createClass({
         }
 
     },
+    renderDiscussions: function(){
+        return(
+            <div style={{width: '100%'}}>
+                <TextField floatingLabelText="Say Something"
+                    style={{width: '100%'}} multiLine={true}
+                    value={this.state.new_message.text}
+                    onChange={(e, text)=>{this.setState({new_message: {...this.state.new_message, text}})}}
+                />
+                <br/>
+                <RaisedButton label="Send" primary={true} onClick={()=>{
+                        this.props.dispatch(insertMessage(this.state.new_message));
+                        this.setState({new_message: this.getNewMessage()});
+                    }}/>
+                <br/>
+                <ul style={{ listStyleType: 'none', margin: '0', padding: '0', overflowWrap: 'break-word' }}>
+    				{this.props.messages.map((msg, k) => {
+    					return <li key={k} style={{ padding: '5px 10px' }}><span style={{ fontWeight: 'bold' }}>{msg.name}:</span> {msg.text}</li>
+    				})}
+    			</ul>
+
+            </div>
+        )
+    },
     renderForAuthor: function(){
         return(
             <div style={{width: '100%'}}>
@@ -79,7 +114,7 @@ const Session = React.createClass({
                 <div style={{width: '100%'}}>
                     <Tabs style={{width: '100%'}}>
                       <Tab label="Discussion" >
-
+                          {this.renderDiscussions()}
                       </Tab>
                       <Tab label="Quizes" >
                         <AddQuiz afterInsert={(quiz_id)=>{
@@ -141,13 +176,20 @@ const Session = React.createClass({
         )
     },
     renderForStudent: function(){
+        const {live_quiz, live_question} = this.props;
+        if(live_quiz){
+            return <Quiz quiz_id={live_quiz.id} />
+        }
+        if(live_question){
+            return <Question question_id={live_question.id} />
+        }
         return(
             <div style={{width: '100%'}}>
                 <h1>{this.props.session.title}</h1>
                 <div style={{width: '100%'}}>
                     <Tabs style={{width: '100%'}}>
                       <Tab label="Discussions" >
-
+                          {this.renderDiscussions()}
                       </Tab>
                       <Tab label="Quizes" >
                         <div style={{width : '100%', display: 'flex', flexDirection: 'row'}}>
@@ -200,6 +242,7 @@ const Session = React.createClass({
 
 export default connect((state, {session_id})=>{
     const session = state.sessions.find((session)=>{return session._id === session_id});
+    const messages = state.messages.filter((message)=>{return message.session_id === session._id});
     const quizes = session.quizes.map((quiz)=>{
         return state.quizes.find((q)=> { return quiz.id === q._id});
     });
@@ -216,11 +259,16 @@ export default connect((state, {session_id})=>{
     }).map((question)=>{
         return state.questions.find((q)=> { return question.id === q._id});
     });
+    const live_quiz = session.quizes.find((quiz)=>{return quiz.live});
+    const live_question = session.questions.find((question)=>{return question.live});
     return {
         session,
+        messages,
         quizes,
         public_quizes,
         questions,
-        public_questions
+        public_questions,
+        live_quiz,
+        live_question
     }
 })(Session)

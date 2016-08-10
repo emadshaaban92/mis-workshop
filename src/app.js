@@ -31,12 +31,7 @@ if(loggedIn){
 const nonWebKitBrowser = indexedDB.webkitGetDatabaseNames == undefined;
 
 const App = ()=>{
-    if(nonWebKitBrowser){
-      return (
-        <h1>Please use Google Chrome to open this application</h1>
-      );
-    }
-
+    
   if(loggedIn){
     return (
       <Provider store={AppStore}>

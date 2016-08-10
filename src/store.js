@@ -74,6 +74,26 @@ function createAppStore(user){
         return doc.type === "quiz";
       }
   }, {
+      path: '/messages',
+      db: localDB,
+      actions: {
+          remove: doc => AppStore.dispatch({
+              type: types.REMOVE_MESSAGE,
+              id: doc._id
+          }),
+          insert: doc => AppStore.dispatch({
+              type: types.INSERT_MESSAGE,
+              message: doc
+          }),
+          update: doc => AppStore.dispatch({
+              type: types.UPDATE_MESSAGE,
+              message: doc
+          }),
+      },
+      changeFilter : (doc) => {
+        return doc.type === "message";
+      }
+  }, {
       path: '/sessions',
       db: localDB,
       actions: {
