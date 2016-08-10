@@ -5,6 +5,7 @@ import {Tabs, Tab} from 'material-ui/Tabs';
 import {List, ListItem} from 'material-ui/List';
 import RaisedButton from 'material-ui/RaisedButton';
 import TextField from 'material-ui/TextField';
+import Toggle from 'material-ui/Toggle';
 
 
 import uuid from 'node-uuid';
@@ -16,7 +17,7 @@ import Quiz from './quiz';
 import AddQuestion from './add_question';
 import Question from './question';
 
-import {addQuizToSession, addQuestionToSession, updateSession, insertMessage} from '../action_creators';
+import {addQuizToSession, addQuestionToSession, updateSession, insertMessage, insertFile, addFileToSession} from '../action_creators';
 
 const styles = {
   button: {
@@ -31,6 +32,9 @@ const styles = {
     left: 0,
     width: '100%',
     opacity: 0,
+  },
+  toggle: {
+    marginBottom: 16,
   },
 };
 
@@ -123,24 +127,46 @@ const Session = React.createClass({
             </div>
         )
     },
+    // getAttachments: function(){
+    //     const {session} = this.props;
+    //     if(session._attachments){
+    //         const names = R.keys(session._attachments);
+    //         const files = names.map((name)=>{
+    //             return {
+    //                 name,
+    //                 url: 'https://couch.bizzotech.com/mis_workshop_v1/' + localStorage.getItem('dbName') + '/' + session._id + '/' + name
+    //             }
+    //         })
+    //         return files;
+    //     }
+    //     return [];
+    // },
     getAttachments: function(){
-        const {session} = this.props;
-        if(session._attachments){
-            const names = R.keys(session._attachments);
-            const files = names.map((name)=>{
-                return {
-                    name,
-                    url: 'https://couch.bizzotech.com/mis_workshop_v1/' + localStorage.getItem('dbName') + '/' + session._id + '/' + name
-                }
-            })
-            return files;
-        }
-        return [];
+        const {files} = this.props;
+        return files.map((file)=>{
+            return {
+                id: file._id,
+                public: file.public,
+                name: file.name,
+                url: 'https://couch.bizzotech.com/mis_workshop_v1/' + localStorage.getItem('dbName') + '/' + file._id + '/' + file.name
+            }
+        })
+    },
+    getPublicAttachments: function(){
+        const {public_files} = this.props;
+        return public_files.map((file)=>{
+            return {
+                id: file._id,
+                name: file.name,
+                url: 'https://couch.bizzotech.com/mis_workshop_v1/' + localStorage.getItem('dbName') + '/' + file._id + '/' + file.name
+            }
+        })
     },
     renderForAuthor: function(){
+        const {session, quizes, questions, messages, files, dispatch} = this.props;
         return(
             <div style={{width: '100%'}}>
-                <h1>{this.props.session.title}</h1>
+                <h1>{session.title}</h1>
                 <div style={{width: '100%'}}>
                     <Tabs style={{width: '100%'}}>
                       <Tab label="Discussion" >
@@ -148,13 +174,13 @@ const Session = React.createClass({
                       </Tab>
                       <Tab label="Quizes" >
                         <AddQuiz afterInsert={(quiz_id)=>{
-                            this.props.dispatch(addQuizToSession(quiz_id, this.props.session));
+                            dispatch(addQuizToSession(quiz_id, session));
                         }}/>
                         <br />
                         <div style={{width : '100%', display: 'flex', flexDirection: 'row'}}>
                             <div style={{width: '30%'}}>
                                 <List>
-                                  {this.props.quizes.map((quiz)=>{
+                                  {quizes.map((quiz)=>{
                                       return <ListItem key={quiz._id} primaryText={quiz.title} onClick={()=>{
                                               this.setState({selected_quiz: quiz._id})
                                           }} />
@@ -174,13 +200,13 @@ const Session = React.createClass({
                       </Tab>
                       <Tab label="Questions" >
                           <AddQuestion afterInsert={(question_id)=>{
-                              this.props.dispatch(addQuestionToSession(question_id, this.props.session));
+                              dispatch(addQuestionToSession(question_id, session));
                           }}/>
                           <br />
                           <div style={{width : '100%', display: 'flex', flexDirection: 'row'}}>
                               <div style={{width: '30%'}}>
                                   <List>
-                                    {this.props.questions.map((question)=>{
+                                    {questions.map((question)=>{
                                         return <ListItem key={question._id} primaryText={question.title} onClick={()=>{
                                                 this.setState({selected_question: question._id})
                                             }} />
@@ -201,36 +227,40 @@ const Session = React.createClass({
                             <input type="file" style={styles.exampleImageInput}
                                 onChange={(e)=>{
                                     const file =  e.target.files[0];
-                                    const attachments = {};
-                                    attachments[file.name] = {
+                                    const _attachments = {};
+                                    _attachments[file.name] = {
                                         'content_type': file.type,
                                         data: file
                                     }
-                                    const session = {
-                                        ...this.props.session,
-                                        _attachments : {
-                                            ...(this.props.session._attachments || {}),
-                                            ...attachments
-                                        }
+                                    const fileObj = {
+                                        _id : "file_" + uuid.v1(),
+                                        type: "file",
+                                        name : file.name,
+                                        content_type: file.type,
+                                        _attachments
                                     }
-                                    this.props.dispatch(updateSession(session));
+
+                                    dispatch(insertFile(fileObj));
+                                    dispatch(addFileToSession(fileObj._id, this.props.session));
                                 } }/>
                             <br/>
                             {this.getAttachments().map((file, i)=>{
                                 return(
                                     <div key={i}>
                                         <a href={file.url}>{file.name}</a> <a onClick={()=>{
-                                            const attachments = {};
-                                            attachments[file.name] = undefined;
-                                            const session = {
-                                                ...this.props.session,
-                                                _attachments : {
-                                                    ...(this.props.session._attachments || {}),
-                                                    ...attachments
-                                                }
-                                            }
-                                            this.props.dispatch(updateSession(session));
+                                            const files = session.files.filter((f)=>{
+                                                return file.id !== f.id;
+                                            });
+                                            dispatch(updateSession({...session, files}));
                                         }}>delete</a>
+                                        <Toggle label="Public" style={styles.toggle}
+                                            defaultToggled={session.files[i].public} onToggle={()=>{
+                                                dispatch(updateSession({
+                                                    ...session,
+                                                    files: R.update(i, {...session.files[i], public: !file.public}, session.files)
+                                                }))
+                                            }}
+                                        />
                                     </div>
                                 )
                             })}
@@ -291,7 +321,7 @@ const Session = React.createClass({
                           </div>
                       </Tab>
                       <Tab label="Files" >
-                          {this.getAttachments().map((file, i)=>{
+                          {this.getPublicAttachments().map((file, i)=>{
                               return(
                                   <div key={i}>
                                       <a href={file.url}>{file.name}</a>
@@ -316,6 +346,17 @@ const Session = React.createClass({
 export default connect((state, {session_id})=>{
     const session = state.sessions.find((session)=>{return session._id === session_id});
     const messages = state.messages.filter((message)=>{return message.session_id === session._id});
+    const files = session.files.map((file)=>{
+        return {
+            ...(state.files.find((f)=> { return file.id === f._id})),
+            ...file
+        }
+    });
+    const public_files = session.files.filter((file)=>{
+        return file.public;
+    }).map((file)=>{
+        return state.files.find((f)=> { return file.id === f._id});
+    });
     const quizes = session.quizes.map((quiz)=>{
         return state.quizes.find((q)=> { return quiz.id === q._id});
     });
@@ -337,6 +378,8 @@ export default connect((state, {session_id})=>{
     return {
         session,
         messages,
+        files,
+        public_files,
         quizes,
         public_quizes,
         questions,

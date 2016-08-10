@@ -55,6 +55,19 @@ function messages(state=[], action){
   }
 }
 
+function files(state=[], action){
+  switch (action.type) {
+    case types.INSERT_FILE:
+      return [...state, action.file]
+    case types.UPDATE_FILE:
+      return state.map((f)=> { return f._id == action.file._id ? action.file : f})
+    case types.REMOVE_FILE:
+      return state.filter((f)=> { return f._id != action.id})
+    default:
+      return state
+  }
+}
+
 function sessions(state=[], action){
   switch (action.type) {
     case types.INSERT_SESSION:
@@ -99,6 +112,7 @@ export default combineReducers({
   answers,
   quizes,
   messages,
+  files,
   sessions,
   courses,
   history

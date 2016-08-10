@@ -256,9 +256,26 @@ export const addQuestionToSession = (question_id, session)=> {
     }
 }
 
+export const addFileToSession = (file_id, session)=> {
+    return {
+        type: types.UPDATE_SESSION,
+        session: {
+            ...session,
+            files: [...session.files, {id: file_id, public: false}]
+        }
+    }
+}
+
 export const insertMessage = (message)=>{
     return {
         type: types.INSERT_MESSAGE,
         message
+    }
+}
+
+export const insertFile = (file)=>{
+    return {
+        type: types.INSERT_FILE,
+        file
     }
 }

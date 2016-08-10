@@ -18,7 +18,7 @@ const AddSession = React.createClass({
                 discussions: [],
                 quizes: [],
                 questions: [],
-                _attachments: undefined,
+                files: [],
                 live: false,
                 public: false
             }

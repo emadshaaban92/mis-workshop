@@ -106,7 +106,6 @@ const Quiz = React.createClass({
                       <EditQuiz quiz_id={this.props.quiz._id} afterEdit={()=>{}}/>;
                   </Tab>
                 </Tabs>
-                {this.renderLiveButton()}
             </div>
         )
     },
