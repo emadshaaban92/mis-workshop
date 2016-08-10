@@ -241,7 +241,17 @@ export const addQuizToSession = (quiz_id, session)=> {
         type: types.UPDATE_SESSION,
         session: {
             ...session,
-            quizes: [...session.quizes, {id: quiz_id, live: false}]
+            quizes: [...session.quizes, {id: quiz_id, live: false, public: false}]
+        }
+    }
+}
+
+export const addQuestionToSession = (question_id, session)=> {
+    return {
+        type: types.UPDATE_SESSION,
+        session: {
+            ...session,
+            questions: [...session.questions, {id: question_id, live: false, public: false}]
         }
     }
 }
