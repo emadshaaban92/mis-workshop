@@ -14,6 +14,9 @@ import {navtigateToQuizes, navigateToQuestions, navigateToSessions, navigateToLi
 import Router from './router';
 import SelectCourse from './select_course';
 
+import Session from './session';
+import Sessions from './sessions';
+
 
 const style = {
   display: 'flex',
@@ -82,8 +85,17 @@ const Container = React.createClass({
       </Drawer>
     )
   },
+  renderForStudent: function(){
+      if(this.props.live_session){
+          return <Session session_id={this.props.live_session._id} />
+      }
+      return <Sessions />
+  },
   renderBody : function(){
     if(localStorage.getItem('selected_course')){
+        if(localStorage.getItem('auther') !== "true"){
+            return this.renderForStudent();
+        }
       return (
         <div>
           {this.renderDrawer()}
@@ -124,4 +136,8 @@ const Container = React.createClass({
   }
 });
 
-export default connect()(Container);
+export default connect((state)=>{
+    return {
+        live_session : state.sessions.find((session)=>{return session.live})
+    }
+})(Container);

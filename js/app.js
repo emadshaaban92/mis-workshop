@@ -90883,14 +90883,14 @@ var updateSession = exports.updateSession = function updateSession(session) {
 var sessionStartLive = exports.sessionStartLive = function sessionStartLive(session) {
     return {
         type: types.UPDATE_SESSION,
-        session: _extends({}, session, { live: true, start_date: session.start_date || new Date() })
+        session: _extends({}, session, { live: true, public: true, start_date: session.start_date || JSON.stringify(new Date()) })
     };
 };
 
 var sessionStopLive = exports.sessionStopLive = function sessionStopLive(session) {
     return {
         type: types.UPDATE_SESSION,
-        session: _extends({}, session, { live: false, end_date: new Date() })
+        session: _extends({}, session, { live: false, end_date: JSON.stringify(new Date()) })
     };
 };
 
@@ -92670,6 +92670,14 @@ var _select_course = require('./select_course');
 
 var _select_course2 = _interopRequireDefault(_select_course);
 
+var _session = require('./session');
+
+var _session2 = _interopRequireDefault(_session);
+
+var _sessions = require('./sessions');
+
+var _sessions2 = _interopRequireDefault(_sessions);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var style = {
@@ -92755,8 +92763,17 @@ var Container = _react2.default.createClass({
       )
     );
   },
+  renderForStudent: function renderForStudent() {
+    if (this.props.live_session) {
+      return _react2.default.createElement(_session2.default, { session_id: this.props.live_session._id });
+    }
+    return _react2.default.createElement(_sessions2.default, null);
+  },
   renderBody: function renderBody() {
     if (localStorage.getItem('selected_course')) {
+      if (localStorage.getItem('auther') !== "true") {
+        return this.renderForStudent();
+      }
       return _react2.default.createElement(
         'div',
         null,
@@ -92800,9 +92817,15 @@ var Container = _react2.default.createClass({
   }
 });
 
-exports.default = (0, _reactRedux.connect)()(Container);
+exports.default = (0, _reactRedux.connect)(function (state) {
+  return {
+    live_session: state.sessions.find(function (session) {
+      return session.live;
+    })
+  };
+})(Container);
 
-},{"../action_creators":630,"./router":653,"./select_course":654,"material-ui/AppBar":281,"material-ui/Drawer":287,"material-ui/FlatButton":292,"material-ui/IconButton":296,"material-ui/IconMenu":298,"material-ui/MenuItem":307,"material-ui/svg-icons/navigation/more-vert":382,"react":583,"react-redux":423}],645:[function(require,module,exports){
+},{"../action_creators":630,"./router":653,"./select_course":654,"./session":655,"./sessions":656,"material-ui/AppBar":281,"material-ui/Drawer":287,"material-ui/FlatButton":292,"material-ui/IconButton":296,"material-ui/IconMenu":298,"material-ui/MenuItem":307,"material-ui/svg-icons/navigation/more-vert":382,"react":583,"react-redux":423}],645:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -93897,6 +93920,10 @@ var _Toggle = require('material-ui/Toggle');
 
 var _Toggle2 = _interopRequireDefault(_Toggle);
 
+var _Checkbox = require('material-ui/Checkbox');
+
+var _Checkbox2 = _interopRequireDefault(_Checkbox);
+
 var _nodeUuid = require('node-uuid');
 
 var _nodeUuid2 = _interopRequireDefault(_nodeUuid);
@@ -93964,6 +93991,20 @@ var Session = _react2.default.createClass({
             new_message: this.getNewMessage()
         };
     },
+    renderLiveSessionButton: function renderLiveSessionButton() {
+        var _this = this;
+
+        var session = this.props.session;
+
+        if (session.live) {
+            return _react2.default.createElement(_RaisedButton2.default, { label: 'Stop', primary: true, onClick: function onClick() {
+                    _this.props.dispatch((0, _action_creators.sessionStopLive)(session));
+                } });
+        }
+        return _react2.default.createElement(_RaisedButton2.default, { label: 'Live', primary: true, onClick: function onClick() {
+                _this.props.dispatch((0, _action_creators.sessionStartLive)(session));
+            } });
+    },
     renderSelectedQuiz: function renderSelectedQuiz() {
         if (this.state.selected_quiz) {
             return _react2.default.createElement(_quiz2.default, { disabled: true, quiz_id: this.state.selected_quiz });
@@ -93975,12 +94016,12 @@ var Session = _react2.default.createClass({
         }
     },
     renderLiveQuizButton: function renderLiveQuizButton() {
-        var _this = this;
+        var _this2 = this;
 
         if (this.state.selected_quiz) {
             var _ret = function () {
-                var selected_quiz = _this.state.selected_quiz;
-                var session = _this.props.session;
+                var selected_quiz = _this2.state.selected_quiz;
+                var session = _this2.props.session;
 
                 var quiz = session.quizes.find(function (q) {
                     return q.id === selected_quiz;
@@ -93990,14 +94031,14 @@ var Session = _react2.default.createClass({
                     return {
                         v: _react2.default.createElement(_RaisedButton2.default, { label: 'Stop', primary: true, onClick: function onClick() {
                                 var quizes = _ramda2.default.update(quiz_index, _extends({}, quiz, { live: false }), session.quizes);
-                                _this.props.dispatch((0, _action_creators.updateSession)(_extends({}, session, { quizes: quizes })));
+                                _this2.props.dispatch((0, _action_creators.updateSession)(_extends({}, session, { quizes: quizes })));
                             } })
                     };
                 }
                 return {
                     v: _react2.default.createElement(_RaisedButton2.default, { label: 'Live', primary: true, onClick: function onClick() {
                             var quizes = _ramda2.default.update(quiz_index, _extends({}, quiz, { live: true, public: true }), session.quizes);
-                            _this.props.dispatch((0, _action_creators.updateSession)(_extends({}, session, { quizes: quizes })));
+                            _this2.props.dispatch((0, _action_creators.updateSession)(_extends({}, session, { quizes: quizes })));
                         } })
                 };
             }();
@@ -94006,12 +94047,12 @@ var Session = _react2.default.createClass({
         }
     },
     renderLiveQuestionButton: function renderLiveQuestionButton() {
-        var _this2 = this;
+        var _this3 = this;
 
         if (this.state.selected_question) {
             var _ret2 = function () {
-                var selected_question = _this2.state.selected_question;
-                var session = _this2.props.session;
+                var selected_question = _this3.state.selected_question;
+                var session = _this3.props.session;
 
                 var question = session.questions.find(function (q) {
                     return q.id === selected_question;
@@ -94021,14 +94062,14 @@ var Session = _react2.default.createClass({
                     return {
                         v: _react2.default.createElement(_RaisedButton2.default, { label: 'Stop', primary: true, onClick: function onClick() {
                                 var questions = _ramda2.default.update(question_index, _extends({}, question, { live: false }), session.questions);
-                                _this2.props.dispatch((0, _action_creators.updateSession)(_extends({}, session, { questions: questions })));
+                                _this3.props.dispatch((0, _action_creators.updateSession)(_extends({}, session, { questions: questions })));
                             } })
                     };
                 }
                 return {
                     v: _react2.default.createElement(_RaisedButton2.default, { label: 'Live', primary: true, onClick: function onClick() {
                             var questions = _ramda2.default.update(question_index, _extends({}, question, { live: true, public: true }), session.questions);
-                            _this2.props.dispatch((0, _action_creators.updateSession)(_extends({}, session, { questions: questions })));
+                            _this3.props.dispatch((0, _action_creators.updateSession)(_extends({}, session, { questions: questions })));
                         } })
                 };
             }();
@@ -94037,35 +94078,43 @@ var Session = _react2.default.createClass({
         }
     },
     renderDiscussions: function renderDiscussions() {
-        var _this3 = this;
+        var _this4 = this;
+
+        var session = this.props.session;
+        var new_message = this.state.new_message;
 
         return _react2.default.createElement(
             'div',
             { style: { width: '100%' } },
             _react2.default.createElement(_TextField2.default, { floatingLabelText: 'Say Something',
                 style: { width: '100%' }, multiLine: true,
-                value: this.state.new_message.text,
+                value: new_message.text,
                 onChange: function onChange(e, text) {
-                    _this3.setState({ new_message: _extends({}, _this3.state.new_message, { text: text }) });
+                    _this4.setState({ new_message: _extends({}, new_message, { text: text }) });
                 }
             }),
             _react2.default.createElement('br', null),
             _react2.default.createElement(_RaisedButton2.default, { label: 'Send', primary: true, onClick: function onClick() {
-                    _this3.props.dispatch((0, _action_creators.insertMessage)(_this3.state.new_message));
-                    _this3.setState({ new_message: _this3.getNewMessage() });
+                    _this4.props.dispatch((0, _action_creators.insertMessage)(new_message));
+                    _this4.setState({ new_message: _this4.getNewMessage() });
+                } }),
+            _react2.default.createElement(_Checkbox2.default, { label: 'Anonymous', defaultChecked: new_message.anonymous,
+                onCheck: function onCheck() {
+                    _this4.setState({ new_message: _extends({}, new_message, { anonymous: !new_message.anonymous }) });
                 } }),
             _react2.default.createElement('br', null),
             _react2.default.createElement(
                 'ul',
                 { style: { listStyleType: 'none', margin: '0', padding: '0', overflowWrap: 'break-word' } },
                 this.props.messages.map(function (msg, k) {
+                    var name = msg.anonymous ? "Anonymous" : msg.name;
                     return _react2.default.createElement(
                         'li',
                         { key: k, style: { padding: '5px 10px' } },
                         _react2.default.createElement(
                             'span',
                             { style: { fontWeight: 'bold' } },
-                            msg.name,
+                            name,
                             ':'
                         ),
                         ' ',
@@ -94113,7 +94162,7 @@ var Session = _react2.default.createClass({
         });
     },
     renderForAuthor: function renderForAuthor() {
-        var _this4 = this;
+        var _this5 = this;
 
         var _props = this.props;
         var session = _props.session;
@@ -94130,6 +94179,18 @@ var Session = _react2.default.createClass({
                 'h1',
                 null,
                 session.title
+            ),
+            this.renderLiveSessionButton(),
+            _react2.default.createElement(
+                'div',
+                { style: { width: '10%' } },
+                _react2.default.createElement(_Toggle2.default, { label: 'Public', style: styles.toggle,
+                    defaultToggled: session.public, onToggle: function onToggle() {
+                        dispatch((0, _action_creators.updateSession)(_extends({}, session, {
+                            public: !session.public
+                        })));
+                    }
+                })
             ),
             _react2.default.createElement(
                 'div',
@@ -94160,7 +94221,7 @@ var Session = _react2.default.createClass({
                                     null,
                                     quizes.map(function (quiz) {
                                         return _react2.default.createElement(_List.ListItem, { key: quiz._id, primaryText: quiz.title, onClick: function onClick() {
-                                                _this4.setState({ selected_quiz: quiz._id });
+                                                _this5.setState({ selected_quiz: quiz._id });
                                             } });
                                     })
                                 )
@@ -94196,7 +94257,7 @@ var Session = _react2.default.createClass({
                                     null,
                                     questions.map(function (question) {
                                         return _react2.default.createElement(_List.ListItem, { key: question._id, primaryText: question.title, onClick: function onClick() {
-                                                _this4.setState({ selected_question: question._id });
+                                                _this5.setState({ selected_question: question._id });
                                             } });
                                     })
                                 )
@@ -94237,7 +94298,7 @@ var Session = _react2.default.createClass({
                                     };
 
                                     dispatch((0, _action_creators.insertFile)(fileObj));
-                                    dispatch((0, _action_creators.addFileToSession)(fileObj._id, _this4.props.session));
+                                    dispatch((0, _action_creators.addFileToSession)(fileObj._id, _this5.props.session));
                                 } }),
                             _react2.default.createElement('br', null),
                             this.getAttachments().map(function (file, i) {
@@ -94276,7 +94337,7 @@ var Session = _react2.default.createClass({
         );
     },
     renderForStudent: function renderForStudent() {
-        var _this5 = this;
+        var _this6 = this;
 
         var _props2 = this.props;
         var live_quiz = _props2.live_quiz;
@@ -94321,7 +94382,7 @@ var Session = _react2.default.createClass({
                                     null,
                                     this.props.public_quizes.map(function (quiz) {
                                         return _react2.default.createElement(_List.ListItem, { key: quiz._id, primaryText: quiz.title, onClick: function onClick() {
-                                                _this5.setState({ selected_quiz: quiz._id });
+                                                _this6.setState({ selected_quiz: quiz._id });
                                             } });
                                     })
                                 )
@@ -94347,7 +94408,7 @@ var Session = _react2.default.createClass({
                                     null,
                                     this.props.public_questions.map(function (question) {
                                         return _react2.default.createElement(_List.ListItem, { key: question._id, primaryText: question.title, onClick: function onClick() {
-                                                _this5.setState({ selected_question: question._id });
+                                                _this6.setState({ selected_question: question._id });
                                             } });
                                     })
                                 )
@@ -94451,7 +94512,7 @@ exports.default = (0, _reactRedux.connect)(function (state, _ref) {
     };
 })(Session);
 
-},{"../action_creators":630,"./add_question":641,"./add_quiz":642,"./question":649,"./quiz":651,"material-ui/List":303,"material-ui/RaisedButton":314,"material-ui/Tabs":340,"material-ui/TextField":346,"material-ui/Toggle":348,"node-uuid":397,"ramda":414,"react":583,"react-redux":423}],656:[function(require,module,exports){
+},{"../action_creators":630,"./add_question":641,"./add_quiz":642,"./question":649,"./quiz":651,"material-ui/Checkbox":283,"material-ui/List":303,"material-ui/RaisedButton":314,"material-ui/Tabs":340,"material-ui/TextField":346,"material-ui/Toggle":348,"node-uuid":397,"ramda":414,"react":583,"react-redux":423}],656:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -94550,7 +94611,12 @@ var Sessions = function Sessions(_ref) {
 };
 
 exports.default = (0, _reactRedux.connect)(function (state) {
-  return { sessions: state.sessions };
+  if (localStorage.getItem('auther') === "true") {
+    return { sessions: state.sessions };
+  }
+  return { sessions: state.sessions.filter(function (session) {
+      return session.public;
+    }) };
 })(Sessions);
 
 },{"../action_creators":630,"../components/add_icon":632,"material-ui/Table":335,"react":583,"react-redux":423}],657:[function(require,module,exports){

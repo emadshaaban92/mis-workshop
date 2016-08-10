@@ -48,5 +48,9 @@ const Sessions = ({sessions, dispatch}) => {
 
 
 export default connect((state) => {
-  return { sessions : state.sessions}
+    if(localStorage.getItem('auther') === "true"){
+        return { sessions : state.sessions}
+    }
+    return { sessions : state.sessions.filter((session)=>{return session.public}) }
+
 })(Sessions);

@@ -85,14 +85,14 @@ export const updateSession = (session) => {
 export const sessionStartLive = (session) => {
     return {
       type : types.UPDATE_SESSION,
-      session : {...session, live: true, start_date: session.start_date || new Date()}
+      session : {...session, live: true, public: true, start_date: session.start_date || JSON.stringify(new Date())}
     }
 }
 
 export const sessionStopLive = (session) => {
     return {
       type : types.UPDATE_SESSION,
-      session : {...session, live:false, end_date: new Date()}
+      session : {...session, live:false, end_date: JSON.stringify(new Date())}
     }
 }
 

@@ -6,6 +6,7 @@ import {List, ListItem} from 'material-ui/List';
 import RaisedButton from 'material-ui/RaisedButton';
 import TextField from 'material-ui/TextField';
 import Toggle from 'material-ui/Toggle';
+import Checkbox from 'material-ui/Checkbox';
 
 
 import uuid from 'node-uuid';
@@ -17,7 +18,8 @@ import Quiz from './quiz';
 import AddQuestion from './add_question';
 import Question from './question';
 
-import {addQuizToSession, addQuestionToSession, updateSession, insertMessage, insertFile, addFileToSession} from '../action_creators';
+import {addQuizToSession, addQuestionToSession, updateSession,
+    insertMessage, insertFile, addFileToSession, sessionStartLive, sessionStopLive} from '../action_creators';
 
 const styles = {
   button: {
@@ -55,6 +57,18 @@ const Session = React.createClass({
             selected_question: undefined,
             new_message: this.getNewMessage()
         }
+    },
+    renderLiveSessionButton: function(){
+        const {session} = this.props;
+        if(session.live){
+            return <RaisedButton label="Stop" primary={true} onClick={()=>{
+                    this.props.dispatch(sessionStopLive(session))
+                }}/>
+        }
+        return <RaisedButton label="Live" primary={true} onClick={()=>{
+                this.props.dispatch(sessionStartLive(session))
+            }}/>
+
     },
     renderSelectedQuiz: function(){
         if(this.state.selected_quiz){
@@ -105,22 +119,29 @@ const Session = React.createClass({
 
     },
     renderDiscussions: function(){
+        const {session} = this.props;
+        const {new_message} = this.state;
         return(
             <div style={{width: '100%'}}>
                 <TextField floatingLabelText="Say Something"
                     style={{width: '100%'}} multiLine={true}
-                    value={this.state.new_message.text}
-                    onChange={(e, text)=>{this.setState({new_message: {...this.state.new_message, text}})}}
+                    value={new_message.text}
+                    onChange={(e, text)=>{this.setState({new_message: {...new_message, text}})}}
                 />
                 <br/>
                 <RaisedButton label="Send" primary={true} onClick={()=>{
-                        this.props.dispatch(insertMessage(this.state.new_message));
+                        this.props.dispatch(insertMessage(new_message));
                         this.setState({new_message: this.getNewMessage()});
+                    }}/>
+                <Checkbox label="Anonymous" defaultChecked={new_message.anonymous}
+                    onCheck={()=>{
+                        this.setState({new_message : {...new_message, anonymous: !new_message.anonymous}})
                     }}/>
                 <br/>
                 <ul style={{ listStyleType: 'none', margin: '0', padding: '0', overflowWrap: 'break-word' }}>
     				{this.props.messages.map((msg, k) => {
-    					return <li key={k} style={{ padding: '5px 10px' }}><span style={{ fontWeight: 'bold' }}>{msg.name}:</span> {msg.text}</li>
+                        const name = msg.anonymous ? "Anonymous" : msg.name;
+    					return <li key={k} style={{ padding: '5px 10px' }}><span style={{ fontWeight: 'bold' }}>{name}:</span> {msg.text}</li>
     				})}
     			</ul>
 
@@ -167,6 +188,18 @@ const Session = React.createClass({
         return(
             <div style={{width: '100%'}}>
                 <h1>{session.title}</h1>
+                {this.renderLiveSessionButton()}
+                <div style={{width: '10%'}}>
+                    <Toggle label="Public" style={styles.toggle}
+                        defaultToggled={session.public} onToggle={()=>{
+                            dispatch(updateSession({
+                                ...session,
+                                public: !session.public
+                            }))
+                        }}
+                    />
+                </div>
+
                 <div style={{width: '100%'}}>
                     <Tabs style={{width: '100%'}}>
                       <Tab label="Discussion" >
