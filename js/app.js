@@ -91475,7 +91475,7 @@ var QuestionView = _react2.default.createClass({
 
         var answer = this.state.answer;
 
-        return _react2.default.createElement(_Checkbox2.default, { disabled: answer.submited, key: i, label: value,
+        return _react2.default.createElement(_Checkbox2.default, { disabled: this.props.disabled || answer.submited, key: i, label: value,
             checked: value == answer.value,
             onCheck: function onCheck() {
                 _this.setState({ answer: _extends({}, answer, { value: value }) });
@@ -91487,7 +91487,7 @@ var QuestionView = _react2.default.createClass({
 
         var answer = this.state.answer;
 
-        return _react2.default.createElement(_Checkbox2.default, { disabled: answer.submited, key: value + i, label: value,
+        return _react2.default.createElement(_Checkbox2.default, { disabled: this.props.disabled || answer.submited, key: value + i, label: value,
             checked: answer.value[i],
             onCheck: function onCheck(e, v) {
                 var value = _ramda2.default.update(i, v, answer.value);
@@ -91534,6 +91534,9 @@ var QuestionView = _react2.default.createClass({
                 )
             );
         }
+        if (this.props.disabled) {
+            return;
+        }
         return _react2.default.createElement(
             'div',
             null,
@@ -91567,13 +91570,13 @@ var QuestionView = _react2.default.createClass({
         return _react2.default.createElement(
             'div',
             null,
-            _react2.default.createElement(_Checkbox2.default, { disabled: answer.submited, label: 'True',
+            _react2.default.createElement(_Checkbox2.default, { disabled: this.props.disabled || answer.submited, label: 'True',
                 checked: answer.value === "true",
                 onCheck: function onCheck() {
                     _this4.setState({ answer: _extends({}, answer, { value: "true" }) });
                 }
             }),
-            _react2.default.createElement(_Checkbox2.default, { disabled: answer.submited, label: 'False',
+            _react2.default.createElement(_Checkbox2.default, { disabled: this.props.disabled || answer.submited, label: 'False',
                 checked: answer.value === "false",
                 onCheck: function onCheck() {
                     _this4.setState({ answer: _extends({}, answer, { value: "false" }) });
@@ -91596,7 +91599,7 @@ var QuestionView = _react2.default.createClass({
             ),
             _react2.default.createElement(_TextField2.default, { value: answer.value, name: "answer_essay",
                 style: { width: '100%' },
-                multiLine: true, rows: 6, disabled: answer.submited,
+                multiLine: true, rows: 6, disabled: this.props.disabled || answer.submited,
                 onChange: function onChange(e, value) {
                     _this5.setState({ answer: _extends({}, answer, { value: value }) });
                 } })
@@ -91910,7 +91913,7 @@ var QuizForm = _react2.default.createClass({
     };
   },
   componentWillReceiveProps: function componentWillReceiveProps(nextProps) {
-    if (nextProps.quiz._rev !== this.state.quiz._rev) {
+    if (nextProps.quiz._rev == undefined || nextProps.quiz._rev !== this.state.quiz._rev) {
       this.setState({ quiz: nextProps.quiz });
     }
   },
@@ -92215,7 +92218,7 @@ var QuizView = _react2.default.createClass({
           _react2.default.createElement(
             'div',
             { style: { display: 'flex', justifyContent: 'center' } },
-            _react2.default.createElement(_question_view2.default, { question: questions[stepIndex], answer: answers[stepIndex],
+            _react2.default.createElement(_question_view2.default, { disabled: this.props.disabled, question: questions[stepIndex], answer: answers[stepIndex],
               onChange: function onChange(answer) {
                 _this.props.onChangeAnswer(answer, stepIndex);
               } })
@@ -92432,23 +92435,27 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 var AddQuestion = _react2.default.createClass({
     displayName: 'AddQuestion',
 
+    getNewQuestion: function getNewQuestion() {
+        return {
+            _id: "question_" + _nodeUuid2.default.v1(),
+            title: '',
+            text: '',
+            kind: 'choose_single',
+            choices: [''],
+            type: "question",
+            max_points: 1
+        };
+    },
     getInitialState: function getInitialState() {
         return {
-            question: {
-                _id: "question_" + _nodeUuid2.default.v1(),
-                title: '',
-                text: '',
-                kind: 'choose_single',
-                choices: [''],
-                type: "question",
-                max_points: 1
-            }
+            question: this.getNewQuestion()
         };
     },
     saveQuestion: function saveQuestion() {
         var question = this.state.question;
 
         this.props.dispatch((0, _action_creators.insertQuestion)(question));
+        this.setState({ question: this.getNewQuestion() });
         this.props.afterInsert(question._id);
     },
     render: function render() {
@@ -92500,20 +92507,24 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 var AddQuiz = _react2.default.createClass({
     displayName: 'AddQuiz',
 
+    getNewQuiz: function getNewQuiz() {
+        return {
+            _id: "quiz_" + _nodeUuid2.default.v1(),
+            type: "quiz",
+            title: '',
+            questions: []
+        };
+    },
     getInitialState: function getInitialState() {
         return {
-            quiz: {
-                _id: "quiz_" + _nodeUuid2.default.v1(),
-                type: "quiz",
-                title: '',
-                questions: []
-            }
+            quiz: this.getNewQuiz()
         };
     },
     saveQuiz: function saveQuiz() {
         var quiz = this.state.quiz;
 
         this.props.dispatch((0, _action_creators.insertQuiz)(quiz));
+        this.setState({ quiz: this.getNewQuiz() });
         this.props.afterInsert(quiz._id);
     },
     render: function render() {
@@ -93134,13 +93145,13 @@ var Question = _react2.default.createClass({
         return _react2.default.createElement(
             'div',
             { style: { width: '80%' } },
-            _react2.default.createElement(_question_view2.default, { question: question, answer: answer,
+            _react2.default.createElement(_question_view2.default, { disabled: this.props.disabled, question: question, answer: answer,
                 onChange: function onChange(answer) {
                     _this.setState({ answer: answer });
                 } }),
-            _react2.default.createElement(_RaisedButton2.default, { label: 'Save', primary: true, disabled: answer.submited || !answer.value,
+            _react2.default.createElement(_RaisedButton2.default, { label: 'Save', primary: true, disabled: this.props.disabled || answer.submited || !answer.value,
                 style: { marginRight: 12 }, onClick: this.saveAnswer }),
-            _react2.default.createElement(_RaisedButton2.default, { label: 'Submit', primary: true, disabled: answer.submited || !answer.value,
+            _react2.default.createElement(_RaisedButton2.default, { label: 'Submit', primary: true, disabled: this.props.disabled || answer.submited || !answer.value,
                 style: { marginRight: 12 }, onClick: this.submitAnswer })
         );
     },
@@ -93150,7 +93161,7 @@ var Question = _react2.default.createClass({
         return _react2.default.createElement(
             'div',
             { key: answer._id + answer._rev },
-            _react2.default.createElement(_question_view2.default, { question: this.props.question, answer: answer }),
+            _react2.default.createElement(_question_view2.default, { disabled: this.props.disabled, question: this.props.question, answer: answer }),
             _react2.default.createElement(_TextField2.default, { floatingLabelText: 'Mark', defaultValue: answer.mark,
                 ref: 'mark' + answer._id }),
             _react2.default.createElement(
@@ -93463,6 +93474,8 @@ var Quiz = _react2.default.createClass({
         );
     },
     renderForAuthor: function renderForAuthor() {
+        var _this4 = this;
+
         return _react2.default.createElement(
             'div',
             { style: { width: '100%' } },
@@ -93473,7 +93486,7 @@ var Quiz = _react2.default.createClass({
                     _Tabs.Tab,
                     { label: 'Questions' },
                     this.props.questions.map(function (q) {
-                        return _react2.default.createElement(_question2.default, { key: q._id, question_id: q._id });
+                        return _react2.default.createElement(_question2.default, { disabled: _this4.props.disabled, key: q._id, question_id: q._id });
                     })
                 ),
                 _react2.default.createElement(
@@ -93953,12 +93966,12 @@ var Session = _react2.default.createClass({
     },
     renderSelectedQuiz: function renderSelectedQuiz() {
         if (this.state.selected_quiz) {
-            return _react2.default.createElement(_quiz2.default, { quiz_id: this.state.selected_quiz });
+            return _react2.default.createElement(_quiz2.default, { disabled: true, quiz_id: this.state.selected_quiz });
         }
     },
     renderSelectedQuestion: function renderSelectedQuestion() {
         if (this.state.selected_question) {
-            return _react2.default.createElement(_question2.default, { question_id: this.state.selected_question });
+            return _react2.default.createElement(_question2.default, { disabled: true, question_id: this.state.selected_question });
         }
     },
     renderLiveQuizButton: function renderLiveQuizButton() {

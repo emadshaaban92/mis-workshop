@@ -80,7 +80,7 @@ const QuizView = React.createClass({
           <div style={contentStyle}>
             <div>
               <div style={{display: 'flex', justifyContent: 'center'}}>
-                <QuestionView question={questions[stepIndex]} answer={answers[stepIndex]}
+                <QuestionView disabled={this.props.disabled} question={questions[stepIndex]} answer={answers[stepIndex]}
                     onChange={(answer)=>{this.props.onChangeAnswer(answer, stepIndex)}}/>
               </div>
 

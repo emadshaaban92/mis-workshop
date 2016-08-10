@@ -58,11 +58,11 @@ const Question = React.createClass({
         const {answer} = this.state;
         return (
             <div style={{width: '80%'}}>
-                <QuestionView question={question} answer={answer}
+                <QuestionView disabled={this.props.disabled} question={question} answer={answer}
                     onChange={(answer)=> {this.setState({answer})}} />
-                <RaisedButton label="Save" primary={true} disabled={answer.submited || !answer.value}
+                <RaisedButton label="Save" primary={true} disabled={this.props.disabled || answer.submited || !answer.value}
                     style={{marginRight: 12}} onClick={this.saveAnswer}/>
-                <RaisedButton label="Submit" primary={true} disabled={answer.submited || !answer.value}
+                <RaisedButton label="Submit" primary={true} disabled={this.props.disabled || answer.submited || !answer.value}
                     style={{marginRight: 12}} onClick={this.submitAnswer}/>
             </div>
 
@@ -71,7 +71,7 @@ const Question = React.createClass({
     renderStudentAnswer: function(answer, i){
         return(
             <div key={answer._id+answer._rev}>
-                <QuestionView question={this.props.question} answer={answer} />
+                <QuestionView disabled={this.props.disabled} question={this.props.question} answer={answer} />
                 <TextField floatingLabelText="Mark" defaultValue={answer.mark}
                     ref={'mark'+answer._id}/>
                 <span> / {this.props.question.max_points || 1}</span>

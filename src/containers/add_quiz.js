@@ -10,19 +10,23 @@ import QuizForm from '../components/quiz_form';
 import uuid from 'node-uuid';
 
 const AddQuiz = React.createClass({
+    getNewQuiz: function(){
+        return {
+            _id : "quiz_" + uuid.v1(),
+            type : "quiz",
+            title : '',
+            questions : []
+        }
+    },
     getInitialState: function(){
         return {
-            quiz : {
-                _id : "quiz_" + uuid.v1(),
-                type : "quiz",
-                title : '',
-                questions : []
-            }
+            quiz : this.getNewQuiz()
         }
     },
     saveQuiz: function(){
         const {quiz} = this.state;
         this.props.dispatch(insertQuiz(quiz));
+        this.setState({quiz: this.getNewQuiz()});
         this.props.afterInsert(quiz._id);
     },
     render: function(){

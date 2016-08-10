@@ -99,7 +99,7 @@ const Quiz = React.createClass({
                 <Tabs style={{width: '100%'}}>
                   <Tab label="Questions" >
                       {this.props.questions.map((q)=>{
-                          return <Question  key={q._id} question_id={q._id} />
+                          return <Question disabled={this.props.disabled} key={q._id} question_id={q._id} />
                       })}
                   </Tab>
                   <Tab label="Edit Quiz" >

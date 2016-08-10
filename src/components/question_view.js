@@ -40,7 +40,7 @@ const QuestionView = React.createClass({
     renderChoiceSingle: function(value, i){
         const {answer} = this.state;
         return(
-            <Checkbox disabled={answer.submited} key={i} label={value}
+            <Checkbox disabled={this.props.disabled || answer.submited} key={i} label={value}
                 checked={value == answer.value}
                 onCheck={()=>{
                     this.setState({answer : {...answer, value}})
@@ -51,7 +51,7 @@ const QuestionView = React.createClass({
     renderChoiceMulti: function(value, i){
         const {answer} = this.state;
         return(
-            <Checkbox disabled={answer.submited} key={value + i} label={value}
+            <Checkbox disabled={this.props.disabled || answer.submited} key={value + i} label={value}
                 checked={answer.value[i]}
                 onCheck={(e, v)=>{
                     const value = R.update(i, v, answer.value);
@@ -87,6 +87,9 @@ const QuestionView = React.createClass({
                 </div>
             )
         }
+        if(this.props.disabled){
+            return;
+        }
         return(
             <div>
                 <h3>Attach your answer file :</h3>
@@ -111,13 +114,13 @@ const QuestionView = React.createClass({
         const {answer} = this.state;
         return(
             <div>
-                <Checkbox disabled={answer.submited} label="True"
+                <Checkbox disabled={this.props.disabled || answer.submited} label="True"
                     checked={answer.value === "true"}
                     onCheck={()=>{
                         this.setState({answer : {...answer, value : "true"}})
                     }}
                 />
-                <Checkbox disabled={answer.submited} label="False"
+                <Checkbox disabled={this.props.disabled || answer.submited} label="False"
                     checked={answer.value === "false"}
                     onCheck={()=>{
                         this.setState({answer : {...answer, value : "false"}})
@@ -134,7 +137,7 @@ const QuestionView = React.createClass({
                 <h3>Write your answer :</h3>
                 <TextField value={answer.value} name={"answer_essay"}
                     style={{width: '100%'}}
-                    multiLine={true} rows={6} disabled={answer.submited}
+                    multiLine={true} rows={6} disabled={this.props.disabled || answer.submited}
                   onChange={(e, value)=>{
                     this.setState({answer : {...answer, value}});
                   }}/>

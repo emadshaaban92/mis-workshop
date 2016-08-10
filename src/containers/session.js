@@ -58,12 +58,12 @@ const Session = React.createClass({
     },
     renderSelectedQuiz: function(){
         if(this.state.selected_quiz){
-            return <Quiz quiz_id={this.state.selected_quiz} />
+            return <Quiz disabled={true} quiz_id={this.state.selected_quiz} />
         }
     },
     renderSelectedQuestion: function(){
         if(this.state.selected_question){
-            return <Question question_id={this.state.selected_question} />
+            return <Question disabled={true} question_id={this.state.selected_question} />
         }
     },
     renderLiveQuizButton: function(){

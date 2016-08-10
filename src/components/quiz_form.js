@@ -136,7 +136,7 @@ const QuizForm = React.createClass({
         }
     },
     componentWillReceiveProps: function(nextProps){
-        if(nextProps.quiz._rev !== this.state.quiz._rev){
+        if(nextProps.quiz._rev == undefined || nextProps.quiz._rev !== this.state.quiz._rev){
             this.setState({quiz: nextProps.quiz});
         }
     },
