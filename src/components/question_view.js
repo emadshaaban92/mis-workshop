@@ -6,6 +6,8 @@ import TextField from 'material-ui/TextField';
 import RaisedButton from 'material-ui/RaisedButton';
 import Checkbox from 'material-ui/Checkbox';
 
+import UploadFile from '../containers/upload_file';
+
 const styles = {
   button: {
     margin: 12,
@@ -29,7 +31,7 @@ const QuestionView = React.createClass({
         }
     },
     componentWillReceiveProps: function(nextProps){
-        if(nextProps.answer){
+        if(nextProps.answer._rev !== this.state.answer._rev){
             this.setState({answer: nextProps.answer});
         }
     },
@@ -60,21 +62,22 @@ const QuestionView = React.createClass({
             />
         )
     },
-    getAttachmentUrl: function(){
+    getAttachment: function(){
         const {answer} = this.state;
-        if(answer._attachments){
-            const names = R.keys(answer._attachments);
-            console.log(names)
-            return 'https://couch.bizzotech.com/mis_workshop_v1/' + localStorage.getItem('dbName') + '/' + answer._id + '/' + names[0];
+        if(answer.value){
+            return {
+                id: answer.value.id,
+                name: answer.value.name,
+                url: 'https://couch.bizzotech.com/mis_workshop_v1/mis-files/' + answer.value.id + '/' + answer.value.name
+            }
         }
     },
     renderAttachment: function(){
         const {answer} = this.state;
-        const url = this.getAttachmentUrl();
-        if(url){
-            const names = R.keys(answer._attachments);
+        const file = this.getAttachment();
+        if(file){
             return (
-                <a href={url}>{names[0]}</a>
+                <a href={file.url}>{file.name}</a>
             )
         }
     },
@@ -93,18 +96,18 @@ const QuestionView = React.createClass({
         return(
             <div>
                 <h3>Attach your answer file :</h3>
-                <RaisedButton label="Attach File" labelPosition="before" style={styles.button}>
-                  <input type="file" style={styles.exampleImageInput}
-                      onChange={(e)=>{
-                          const file =  e.target.files[0];
-                          const _attachments = {};
-                          _attachments[file.name] = {
-                              'content_type': file.type,
-                              data: file
-                          }
-                          this.setState({answer: {...answer, _attachments}})
-                      } }/>
-                </RaisedButton>
+                <div>
+                    <h3>The Attached File : {this.renderAttachment()}</h3>
+                </div>
+                <UploadFile user="user" afterUpload={(file)=>{
+                    const value = {
+                        id: file._id,
+                        name: file.name,
+                        content_type: file.content_type
+                    }
+                    console.log(value);
+                    this.setState({answer: {...answer, value}})
+                }}/>
 
                 {this.renderAttachment()}
             </div>

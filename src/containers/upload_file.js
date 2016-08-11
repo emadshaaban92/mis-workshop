@@ -28,7 +28,7 @@ const UploadFile = React.createClass({
         dispatch(insertFile(fileObj));
         afterUpload(fileObj)
         this.refs.file.value = "";
-    }
+    },
     render : function(){
         const {dispatch, user, afterUpload} = this.props;
         return (

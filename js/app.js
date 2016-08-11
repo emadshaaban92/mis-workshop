@@ -91704,6 +91704,10 @@ var _Checkbox = require('material-ui/Checkbox');
 
 var _Checkbox2 = _interopRequireDefault(_Checkbox);
 
+var _upload_file = require('../containers/upload_file');
+
+var _upload_file2 = _interopRequireDefault(_upload_file);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var styles = {
@@ -91731,7 +91735,7 @@ var QuestionView = _react2.default.createClass({
         };
     },
     componentWillReceiveProps: function componentWillReceiveProps(nextProps) {
-        if (nextProps.answer) {
+        if (nextProps.answer._rev !== this.state.answer._rev) {
             this.setState({ answer: nextProps.answer });
         }
     },
@@ -91763,25 +91767,26 @@ var QuestionView = _react2.default.createClass({
             }
         });
     },
-    getAttachmentUrl: function getAttachmentUrl() {
+    getAttachment: function getAttachment() {
         var answer = this.state.answer;
 
-        if (answer._attachments) {
-            var names = _ramda2.default.keys(answer._attachments);
-            console.log(names);
-            return 'https://couch.bizzotech.com/mis_workshop_v1/' + localStorage.getItem('dbName') + '/' + answer._id + '/' + names[0];
+        if (answer.value) {
+            return {
+                id: answer.value.id,
+                name: answer.value.name,
+                url: 'https://couch.bizzotech.com/mis_workshop_v1/mis-files/' + answer.value.id + '/' + answer.value.name
+            };
         }
     },
     renderAttachment: function renderAttachment() {
         var answer = this.state.answer;
 
-        var url = this.getAttachmentUrl();
-        if (url) {
-            var names = _ramda2.default.keys(answer._attachments);
+        var file = this.getAttachment();
+        if (file) {
             return _react2.default.createElement(
                 'a',
-                { href: url },
-                names[0]
+                { href: file.url },
+                file.name
             );
         }
     },
@@ -91814,19 +91819,24 @@ var QuestionView = _react2.default.createClass({
                 'Attach your answer file :'
             ),
             _react2.default.createElement(
-                _RaisedButton2.default,
-                { label: 'Attach File', labelPosition: 'before', style: styles.button },
-                _react2.default.createElement('input', { type: 'file', style: styles.exampleImageInput,
-                    onChange: function onChange(e) {
-                        var file = e.target.files[0];
-                        var _attachments = {};
-                        _attachments[file.name] = {
-                            'content_type': file.type,
-                            data: file
-                        };
-                        _this3.setState({ answer: _extends({}, answer, { _attachments: _attachments }) });
-                    } })
+                'div',
+                null,
+                _react2.default.createElement(
+                    'h3',
+                    null,
+                    'The Attached File : ',
+                    this.renderAttachment()
+                )
             ),
+            _react2.default.createElement(_upload_file2.default, { user: 'user', afterUpload: function afterUpload(file) {
+                    var value = {
+                        id: file._id,
+                        name: file.name,
+                        content_type: file.content_type
+                    };
+                    console.log(value);
+                    _this3.setState({ answer: _extends({}, answer, { value: value }) });
+                } }),
             this.renderAttachment()
         );
     },
@@ -91954,7 +91964,7 @@ var QuestionView = _react2.default.createClass({
 
 exports.default = QuestionView;
 
-},{"material-ui/Checkbox":283,"material-ui/RaisedButton":316,"material-ui/TextField":348,"ramda":416,"react":585}],638:[function(require,module,exports){
+},{"../containers/upload_file":659,"material-ui/Checkbox":283,"material-ui/RaisedButton":316,"material-ui/TextField":348,"ramda":416,"react":585}],638:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -94901,61 +94911,39 @@ var _action_creators = require('../action_creators');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var styles = {
-    button: {
-        margin: 12
-    },
-    exampleImageInput: {
-        cursor: 'pointer',
-        position: 'absolute',
-        top: 0,
-        bottom: 0,
-        right: 0,
-        left: 0,
-        width: '100%',
-        opacity: 0
-    },
-    toggle: {
-        marginBottom: 16
-    }
-};
-
-// return (
-//     <RaisedButton label="Attach File" labelPosition="before" style={styles.button}>
-//       <input type="file" style={styles.exampleImageInput}
-//           onChange={(e)=>{
-//               const file =  e.target.files[0];
-//               const _attachments = {};
-//               _attachments[file.name] = {
-//                   'content_type': file.type,
-//                   data: file
-//               }
-//               const fileObj = {
-//                   _id : "file_" + uuid.v1(),
-//                   type: "file",
-//                   user,
-//                   name : file.name,
-//                   content_type: file.type,
-//                   _attachments
-//               }
-//
-//               dispatch(insertFile(fileObj));
-//               afterUpload(fileObj)
-//           } }/>
-//     </RaisedButton>
-// )
-
-
 var UploadFile = _react2.default.createClass({
     displayName: 'UploadFile',
 
-    render: function render() {
-        var _this = this;
-
+    upload: function upload() {
         var _props = this.props;
         var dispatch = _props.dispatch;
         var user = _props.user;
         var afterUpload = _props.afterUpload;
+
+        var file = this.refs.file.files[0];
+        var _attachments = {};
+        _attachments[file.name] = {
+            'content_type': file.type,
+            data: file
+        };
+        var fileObj = {
+            _id: "file_" + _nodeUuid2.default.v1(),
+            type: "file",
+            user: user,
+            name: file.name,
+            content_type: file.type,
+            _attachments: _attachments
+        };
+
+        dispatch((0, _action_creators.insertFile)(fileObj));
+        afterUpload(fileObj);
+        this.refs.file.value = "";
+    },
+    render: function render() {
+        var _props2 = this.props;
+        var dispatch = _props2.dispatch;
+        var user = _props2.user;
+        var afterUpload = _props2.afterUpload;
 
         return _react2.default.createElement(
             'div',
@@ -94963,59 +94951,12 @@ var UploadFile = _react2.default.createClass({
             _react2.default.createElement('input', { type: 'file', ref: 'file' }),
             _react2.default.createElement(
                 'button',
-                { onClick: function onClick() {
-                        var file = _this.refs.file.files[0];
-                        var _attachments = {};
-                        _attachments[file.name] = {
-                            'content_type': file.type,
-                            data: file
-                        };
-                        var fileObj = {
-                            _id: "file_" + _nodeUuid2.default.v1(),
-                            type: "file",
-                            user: user,
-                            name: file.name,
-                            content_type: file.type,
-                            _attachments: _attachments
-                        };
-
-                        dispatch((0, _action_creators.insertFile)(fileObj));
-                        afterUpload(fileObj);
-                        _this.refs.file.value = "";
-                    } },
+                { onClick: this.upload },
                 'Upload'
             )
         );
     }
 });
-
-// const UploadFile = ({dispatch, user, afterUpload}) => {
-//
-//     return (
-//         <div>
-//             <input type="file" ref="file" />
-//             <button onClick={()=>{
-//                 const file = this.refs.file.files[0];
-//                 const _attachments = {};
-//                 _attachments[file.name] = {
-//                     'content_type': file.type,
-//                     data: file
-//                 }
-//                 const fileObj = {
-//                     _id : "file_" + uuid.v1(),
-//                     type: "file",
-//                     user,
-//                     name : file.name,
-//                     content_type: file.type,
-//                     _attachments
-//                 }
-//
-//                 dispatch(insertFile(fileObj));
-//                 afterUpload(fileObj)
-//             }}>Upload</button>
-//         </div>
-//     )
-// }
 
 exports.default = (0, _reactRedux.connect)()(UploadFile);
 
