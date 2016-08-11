@@ -32,3 +32,6 @@ export const UPDATE_COURSE = 'UPDATE_COURSE';
 export const NAVIGATE_TO = 'NAVIGATE_TO';
 export const GO_BACK = 'GO_BACK';
 export const RESET_ROUTE = 'RESET_ROUTE';
+
+export const SHOW_LOADING = 'SHOW_LOADING';
+export const HIDE_LOADING = 'HIDE_LOADING';

@@ -177,8 +177,14 @@ function createAppStore(user){
 
   }).on('paused', function(info) {
       console.log("replication was paused, usually because of a lost connection");
+      AppStore.dispatch({
+          type: types.HIDE_LOADING
+      });
   }).on('active', function(info) {
       console.log("replication was resumed");
+      AppStore.dispatch({
+          type: types.SHOW_LOADING
+      });
   }).on('error', function(err) {
       console.log("totally unhandled error (shouldn't happen)");
   });

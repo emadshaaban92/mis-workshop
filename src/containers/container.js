@@ -8,6 +8,7 @@ import IconMenu from 'material-ui/IconMenu';
 import MenuItem from 'material-ui/MenuItem';
 import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
 import FlatButton from 'material-ui/FlatButton';
+import CircularProgress from 'material-ui/CircularProgress';
 
 import {navtigateToQuizes, navigateToQuestions, navigateToSessions, navigateToLiveQuiz, resetRoute} from '../action_creators';
 
@@ -130,6 +131,7 @@ const Container = React.createClass({
             </IconMenu>
           }
         />
+    {this.props.loading ? <CircularProgress size={3} /> : null}
       {this.renderBody()}
       </div>
     )
@@ -138,6 +140,7 @@ const Container = React.createClass({
 
 export default connect((state)=>{
     return {
-        live_session : state.sessions.find((session)=>{return session.live})
+        live_session : state.sessions.find((session)=>{return session.live}),
+        loading : state.loading
     }
 })(Container);

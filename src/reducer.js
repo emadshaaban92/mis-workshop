@@ -107,6 +107,18 @@ function history(state=[{name : routeNames.SESSIONS}], action){
   }
 }
 
+function loading(state=false, action){
+    switch (action.type) {
+        case types.SHOW_LOADING:
+            return true
+        case types.HIDE_LOADING:
+            return false
+        default:
+            return state
+
+    }
+}
+
 export default combineReducers({
   questions,
   answers,
@@ -115,5 +127,6 @@ export default combineReducers({
   files,
   sessions,
   courses,
-  history
+  history,
+  loading
 });
