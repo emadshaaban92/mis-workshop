@@ -94920,36 +94920,102 @@ var styles = {
     }
 };
 
-var UploadFile = function UploadFile(_ref) {
-    var dispatch = _ref.dispatch;
-    var user = _ref.user;
-    var afterUpload = _ref.afterUpload;
+// return (
+//     <RaisedButton label="Attach File" labelPosition="before" style={styles.button}>
+//       <input type="file" style={styles.exampleImageInput}
+//           onChange={(e)=>{
+//               const file =  e.target.files[0];
+//               const _attachments = {};
+//               _attachments[file.name] = {
+//                   'content_type': file.type,
+//                   data: file
+//               }
+//               const fileObj = {
+//                   _id : "file_" + uuid.v1(),
+//                   type: "file",
+//                   user,
+//                   name : file.name,
+//                   content_type: file.type,
+//                   _attachments
+//               }
+//
+//               dispatch(insertFile(fileObj));
+//               afterUpload(fileObj)
+//           } }/>
+//     </RaisedButton>
+// )
 
-    return _react2.default.createElement(
-        _RaisedButton2.default,
-        { label: 'Attach File', labelPosition: 'before', style: styles.button },
-        _react2.default.createElement('input', { type: 'file', style: styles.exampleImageInput,
-            onChange: function onChange(e) {
-                var file = e.target.files[0];
-                var _attachments = {};
-                _attachments[file.name] = {
-                    'content_type': file.type,
-                    data: file
-                };
-                var fileObj = {
-                    _id: "file_" + _nodeUuid2.default.v1(),
-                    type: "file",
-                    user: user,
-                    name: file.name,
-                    content_type: file.type,
-                    _attachments: _attachments
-                };
 
-                dispatch((0, _action_creators.insertFile)(fileObj));
-                afterUpload(fileObj);
-            } })
-    );
-};
+var UploadFile = _react2.default.createClass({
+    displayName: 'UploadFile',
+
+    render: function render() {
+        var _this = this;
+
+        var _props = this.props;
+        var dispatch = _props.dispatch;
+        var user = _props.user;
+        var afterUpload = _props.afterUpload;
+
+        return _react2.default.createElement(
+            'div',
+            null,
+            _react2.default.createElement('input', { type: 'file', ref: 'file' }),
+            _react2.default.createElement(
+                'button',
+                { onClick: function onClick() {
+                        var file = _this.refs.file.files[0];
+                        var _attachments = {};
+                        _attachments[file.name] = {
+                            'content_type': file.type,
+                            data: file
+                        };
+                        var fileObj = {
+                            _id: "file_" + _nodeUuid2.default.v1(),
+                            type: "file",
+                            user: user,
+                            name: file.name,
+                            content_type: file.type,
+                            _attachments: _attachments
+                        };
+
+                        dispatch((0, _action_creators.insertFile)(fileObj));
+                        afterUpload(fileObj);
+                        _this.refs.file.value = "";
+                    } },
+                'Upload'
+            )
+        );
+    }
+});
+
+// const UploadFile = ({dispatch, user, afterUpload}) => {
+//
+//     return (
+//         <div>
+//             <input type="file" ref="file" />
+//             <button onClick={()=>{
+//                 const file = this.refs.file.files[0];
+//                 const _attachments = {};
+//                 _attachments[file.name] = {
+//                     'content_type': file.type,
+//                     data: file
+//                 }
+//                 const fileObj = {
+//                     _id : "file_" + uuid.v1(),
+//                     type: "file",
+//                     user,
+//                     name : file.name,
+//                     content_type: file.type,
+//                     _attachments
+//                 }
+//
+//                 dispatch(insertFile(fileObj));
+//                 afterUpload(fileObj)
+//             }}>Upload</button>
+//         </div>
+//     )
+// }
 
 exports.default = (0, _reactRedux.connect)()(UploadFile);
 
