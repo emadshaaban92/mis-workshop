@@ -47,7 +47,7 @@ const UploadFile = ({dispatch, user, afterUpload}) => {
                   }
 
                   dispatch(insertFile(fileObj));
-                  afterUpload(fileObj._id)
+                  afterUpload(fileObj)
               } }/>
         </RaisedButton>
     )

@@ -91318,11 +91318,11 @@ var addQuestionToSession = exports.addQuestionToSession = function addQuestionTo
     };
 };
 
-var addFileToSession = exports.addFileToSession = function addFileToSession(file_id, session) {
+var addFileToSession = exports.addFileToSession = function addFileToSession(file, session) {
     return {
         type: types.UPDATE_SESSION,
         session: _extends({}, session, {
-            files: [].concat(_toConsumableArray(session.files), [{ id: file_id, public: false }])
+            files: [].concat(_toConsumableArray(session.files), [{ id: file._id, name: file.name, content_type: file.content_type, public: false }])
         })
     };
 };
@@ -94424,14 +94424,13 @@ var Session = _react2.default.createClass({
     //     return [];
     // },
     getAttachments: function getAttachments() {
-        var files = this.props.files;
+        var files = this.props.session.files;
 
         return files.map(function (file) {
             return {
-                id: file._id,
-                public: file.public,
+                id: file.id,
                 name: file.name,
-                url: 'https://couch.bizzotech.com/mis_workshop_v1/' + localStorage.getItem('dbName') + '/' + file._id + '/' + file.name
+                url: 'https://couch.bizzotech.com/mis_workshop_v1/mis-files/' + file.id + '/' + file.name
             };
         });
     },
@@ -94440,9 +94439,9 @@ var Session = _react2.default.createClass({
 
         return public_files.map(function (file) {
             return {
-                id: file._id,
+                id: file.id,
                 name: file.name,
-                url: 'https://couch.bizzotech.com/mis_workshop_v1/' + localStorage.getItem('dbName') + '/' + file._id + '/' + file.name
+                url: 'https://couch.bizzotech.com/mis_workshop_v1/mis-files/' + file.id + '/' + file.name
             };
         });
     },
@@ -94563,8 +94562,8 @@ var Session = _react2.default.createClass({
                     _react2.default.createElement(
                         _Tabs.Tab,
                         { label: 'Files' },
-                        _react2.default.createElement(_upload_file2.default, { user: 'public', afterUpload: function afterUpload(file_id) {
-                                dispatch((0, _action_creators.addFileToSession)(file_id, _this5.props.session));
+                        _react2.default.createElement(_upload_file2.default, { user: 'public', afterUpload: function afterUpload(file) {
+                                dispatch((0, _action_creators.addFileToSession)(file, _this5.props.session));
                             } }),
                         _react2.default.createElement('br', null),
                         this.getAttachments().map(function (file, i) {
@@ -94724,17 +94723,8 @@ exports.default = (0, _reactRedux.connect)(function (state, _ref) {
     var messages = state.messages.filter(function (message) {
         return message.session_id === session._id;
     });
-    var files = session.files.map(function (file) {
-        return _extends({}, state.files.find(function (f) {
-            return file.id === f._id;
-        }), file);
-    });
     var public_files = session.files.filter(function (file) {
         return file.public;
-    }).map(function (file) {
-        return state.files.find(function (f) {
-            return file.id === f._id;
-        });
     });
     var quizes = session.quizes.map(function (quiz) {
         return state.quizes.find(function (q) {
@@ -94769,7 +94759,6 @@ exports.default = (0, _reactRedux.connect)(function (state, _ref) {
     return {
         session: session,
         messages: messages,
-        files: files,
         public_files: public_files,
         quizes: quizes,
         public_quizes: public_quizes,
@@ -94957,7 +94946,7 @@ var UploadFile = function UploadFile(_ref) {
                 };
 
                 dispatch((0, _action_creators.insertFile)(fileObj));
-                afterUpload(fileObj._id);
+                afterUpload(fileObj);
             } })
     );
 };

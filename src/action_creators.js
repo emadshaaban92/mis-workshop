@@ -256,12 +256,12 @@ export const addQuestionToSession = (question_id, session)=> {
     }
 }
 
-export const addFileToSession = (file_id, session)=> {
+export const addFileToSession = (file, session)=> {
     return {
         type: types.UPDATE_SESSION,
         session: {
             ...session,
-            files: [...session.files, {id: file_id, public: false}]
+            files: [...session.files, {id: file._id, name: file.name, content_type: file.content_type, public: false}]
         }
     }
 }

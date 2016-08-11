@@ -165,13 +165,12 @@ const Session = React.createClass({
     //     return [];
     // },
     getAttachments: function(){
-        const {files} = this.props;
+        const {files} = this.props.session;
         return files.map((file)=>{
             return {
-                id: file._id,
-                public: file.public,
+                id: file.id,
                 name: file.name,
-                url: 'https://couch.bizzotech.com/mis_workshop_v1/' + localStorage.getItem('dbName') + '/' + file._id + '/' + file.name
+                url: 'https://couch.bizzotech.com/mis_workshop_v1/mis-files/' + file.id + '/' + file.name
             }
         })
     },
@@ -179,9 +178,9 @@ const Session = React.createClass({
         const {public_files} = this.props;
         return public_files.map((file)=>{
             return {
-                id: file._id,
+                id: file.id,
                 name: file.name,
-                url: 'https://couch.bizzotech.com/mis_workshop_v1/' + localStorage.getItem('dbName') + '/' + file._id + '/' + file.name
+                url: 'https://couch.bizzotech.com/mis_workshop_v1/mis-files/' + file.id + '/' + file.name
             }
         })
     },
@@ -258,8 +257,8 @@ const Session = React.createClass({
                           </div>
                       </Tab>
                       <Tab label="Files" >
-                        <UploadFile user="public" afterUpload={(file_id)=>{
-                            dispatch(addFileToSession(file_id, this.props.session));
+                        <UploadFile user="public" afterUpload={(file)=>{
+                            dispatch(addFileToSession(file, this.props.session));
                         }}/>
                         <br/>
                         {this.getAttachments().map((file, i)=>{
@@ -366,16 +365,8 @@ const Session = React.createClass({
 export default connect((state, {session_id})=>{
     const session = state.sessions.find((session)=>{return session._id === session_id});
     const messages = state.messages.filter((message)=>{return message.session_id === session._id});
-    const files = session.files.map((file)=>{
-        return {
-            ...(state.files.find((f)=> { return file.id === f._id})),
-            ...file
-        }
-    });
     const public_files = session.files.filter((file)=>{
         return file.public;
-    }).map((file)=>{
-        return state.files.find((f)=> { return file.id === f._id});
     });
     const quizes = session.quizes.map((quiz)=>{
         return state.quizes.find((q)=> { return quiz.id === q._id});
@@ -398,7 +389,6 @@ export default connect((state, {session_id})=>{
     return {
         session,
         messages,
-        files,
         public_files,
         quizes,
         public_quizes,
