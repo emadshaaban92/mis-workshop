@@ -89,7 +89,7 @@ const Container = React.createClass({
       if(this.props.live_session){
           return <Session session_id={this.props.live_session._id} />
       }
-      return <Sessions />
+      return <div style={style}><Router /></div>
   },
   renderBody : function(){
     if(localStorage.getItem('selected_course')){

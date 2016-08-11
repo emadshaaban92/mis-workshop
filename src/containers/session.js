@@ -18,6 +18,8 @@ import Quiz from './quiz';
 import AddQuestion from './add_question';
 import Question from './question';
 
+import UploadFile from './upload_file';
+
 import {addQuizToSession, addQuestionToSession, updateSession,
     insertMessage, insertFile, addFileToSession, sessionStartLive, sessionStopLive} from '../action_creators';
 
@@ -256,48 +258,30 @@ const Session = React.createClass({
                           </div>
                       </Tab>
                       <Tab label="Files" >
-                          <RaisedButton label="Attach File" labelPosition="before" style={styles.button}>
-                            <input type="file" style={styles.exampleImageInput}
-                                onChange={(e)=>{
-                                    const file =  e.target.files[0];
-                                    const _attachments = {};
-                                    _attachments[file.name] = {
-                                        'content_type': file.type,
-                                        data: file
-                                    }
-                                    const fileObj = {
-                                        _id : "file_" + uuid.v1(),
-                                        type: "file",
-                                        name : file.name,
-                                        content_type: file.type,
-                                        _attachments
-                                    }
-
-                                    dispatch(insertFile(fileObj));
-                                    dispatch(addFileToSession(fileObj._id, this.props.session));
-                                } }/>
-                            <br/>
-                            {this.getAttachments().map((file, i)=>{
-                                return(
-                                    <div key={i}>
-                                        <a href={file.url}>{file.name}</a> <a onClick={()=>{
-                                            const files = session.files.filter((f)=>{
-                                                return file.id !== f.id;
-                                            });
-                                            dispatch(updateSession({...session, files}));
-                                        }}>delete</a>
-                                        <Toggle label="Public" style={styles.toggle}
-                                            defaultToggled={session.files[i].public} onToggle={()=>{
-                                                dispatch(updateSession({
-                                                    ...session,
-                                                    files: R.update(i, {...session.files[i], public: !file.public}, session.files)
-                                                }))
-                                            }}
-                                        />
-                                    </div>
-                                )
-                            })}
-                          </RaisedButton>
+                        <UploadFile user="public" afterUpload={(file_id)=>{
+                            dispatch(addFileToSession(file_id, this.props.session));
+                        }}/>
+                        <br/>
+                        {this.getAttachments().map((file, i)=>{
+                            return(
+                                <div key={i}>
+                                    <a href={file.url}>{file.name}</a> <a onClick={()=>{
+                                        const files = session.files.filter((f)=>{
+                                            return file.id !== f.id;
+                                        });
+                                        dispatch(updateSession({...session, files}));
+                                    }}>delete</a>
+                                    <Toggle label="Public" style={styles.toggle}
+                                        defaultToggled={session.files[i].public} onToggle={()=>{
+                                            dispatch(updateSession({
+                                                ...session,
+                                                files: R.update(i, {...session.files[i], public: !file.public}, session.files)
+                                            }))
+                                        }}
+                                    />
+                                </div>
+                            )
+                        })}
                       </Tab>
                     </Tabs>
 
@@ -306,6 +290,9 @@ const Session = React.createClass({
         )
     },
     renderForStudent: function(){
+        if(!this.props.session.public){
+            return <div></div>
+        }
         const {live_quiz, live_question} = this.props;
         if(live_quiz){
             return <Quiz quiz_id={live_quiz.id} />

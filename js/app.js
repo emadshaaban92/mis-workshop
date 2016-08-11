@@ -91148,7 +91148,7 @@ var App = function App() {
 var app = document.getElementById('app');
 _reactDom2.default.render(_react2.default.createElement(App, null), app);
 
-},{"./containers/container":644,"./login":657,"./store":659,"material-ui/styles/MuiThemeProvider":365,"react":583,"react-dom":419,"react-redux":423,"react-tap-event-plugin":433}],632:[function(require,module,exports){
+},{"./containers/container":644,"./login":658,"./store":660,"material-ui/styles/MuiThemeProvider":365,"react":583,"react-dom":419,"react-redux":423,"react-tap-event-plugin":433}],632:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -92767,7 +92767,11 @@ var Container = _react2.default.createClass({
     if (this.props.live_session) {
       return _react2.default.createElement(_session2.default, { session_id: this.props.live_session._id });
     }
-    return _react2.default.createElement(_sessions2.default, null);
+    return _react2.default.createElement(
+      'div',
+      { style: style },
+      _react2.default.createElement(_router2.default, null)
+    );
   },
   renderBody: function renderBody() {
     if (localStorage.getItem('selected_course')) {
@@ -93948,6 +93952,10 @@ var _question = require('./question');
 
 var _question2 = _interopRequireDefault(_question);
 
+var _upload_file = require('./upload_file');
+
+var _upload_file2 = _interopRequireDefault(_upload_file);
+
 var _action_creators = require('../action_creators');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -94278,59 +94286,39 @@ var Session = _react2.default.createClass({
                     _react2.default.createElement(
                         _Tabs.Tab,
                         { label: 'Files' },
-                        _react2.default.createElement(
-                            _RaisedButton2.default,
-                            { label: 'Attach File', labelPosition: 'before', style: styles.button },
-                            _react2.default.createElement('input', { type: 'file', style: styles.exampleImageInput,
-                                onChange: function onChange(e) {
-                                    var file = e.target.files[0];
-                                    var _attachments = {};
-                                    _attachments[file.name] = {
-                                        'content_type': file.type,
-                                        data: file
-                                    };
-                                    var fileObj = {
-                                        _id: "file_" + _nodeUuid2.default.v1(),
-                                        type: "file",
-                                        name: file.name,
-                                        content_type: file.type,
-                                        _attachments: _attachments
-                                    };
-
-                                    dispatch((0, _action_creators.insertFile)(fileObj));
-                                    dispatch((0, _action_creators.addFileToSession)(fileObj._id, _this5.props.session));
-                                } }),
-                            _react2.default.createElement('br', null),
-                            this.getAttachments().map(function (file, i) {
-                                return _react2.default.createElement(
-                                    'div',
-                                    { key: i },
-                                    _react2.default.createElement(
-                                        'a',
-                                        { href: file.url },
-                                        file.name
-                                    ),
-                                    ' ',
-                                    _react2.default.createElement(
-                                        'a',
-                                        { onClick: function onClick() {
-                                                var files = session.files.filter(function (f) {
-                                                    return file.id !== f.id;
-                                                });
-                                                dispatch((0, _action_creators.updateSession)(_extends({}, session, { files: files })));
-                                            } },
-                                        'delete'
-                                    ),
-                                    _react2.default.createElement(_Toggle2.default, { label: 'Public', style: styles.toggle,
-                                        defaultToggled: session.files[i].public, onToggle: function onToggle() {
-                                            dispatch((0, _action_creators.updateSession)(_extends({}, session, {
-                                                files: _ramda2.default.update(i, _extends({}, session.files[i], { public: !file.public }), session.files)
-                                            })));
-                                        }
-                                    })
-                                );
-                            })
-                        )
+                        _react2.default.createElement(_upload_file2.default, { user: 'public', afterUpload: function afterUpload(file_id) {
+                                dispatch((0, _action_creators.addFileToSession)(file_id, _this5.props.session));
+                            } }),
+                        _react2.default.createElement('br', null),
+                        this.getAttachments().map(function (file, i) {
+                            return _react2.default.createElement(
+                                'div',
+                                { key: i },
+                                _react2.default.createElement(
+                                    'a',
+                                    { href: file.url },
+                                    file.name
+                                ),
+                                ' ',
+                                _react2.default.createElement(
+                                    'a',
+                                    { onClick: function onClick() {
+                                            var files = session.files.filter(function (f) {
+                                                return file.id !== f.id;
+                                            });
+                                            dispatch((0, _action_creators.updateSession)(_extends({}, session, { files: files })));
+                                        } },
+                                    'delete'
+                                ),
+                                _react2.default.createElement(_Toggle2.default, { label: 'Public', style: styles.toggle,
+                                    defaultToggled: session.files[i].public, onToggle: function onToggle() {
+                                        dispatch((0, _action_creators.updateSession)(_extends({}, session, {
+                                            files: _ramda2.default.update(i, _extends({}, session.files[i], { public: !file.public }), session.files)
+                                        })));
+                                    }
+                                })
+                            );
+                        })
                     )
                 )
             )
@@ -94339,6 +94327,9 @@ var Session = _react2.default.createClass({
     renderForStudent: function renderForStudent() {
         var _this6 = this;
 
+        if (!this.props.session.public) {
+            return _react2.default.createElement('div', null);
+        }
         var _props2 = this.props;
         var live_quiz = _props2.live_quiz;
         var live_question = _props2.live_question;
@@ -94512,7 +94503,7 @@ exports.default = (0, _reactRedux.connect)(function (state, _ref) {
     };
 })(Session);
 
-},{"../action_creators":630,"./add_question":641,"./add_quiz":642,"./question":649,"./quiz":651,"material-ui/Checkbox":283,"material-ui/List":303,"material-ui/RaisedButton":314,"material-ui/Tabs":340,"material-ui/TextField":346,"material-ui/Toggle":348,"node-uuid":397,"ramda":414,"react":583,"react-redux":423}],656:[function(require,module,exports){
+},{"../action_creators":630,"./add_question":641,"./add_quiz":642,"./question":649,"./quiz":651,"./upload_file":657,"material-ui/Checkbox":283,"material-ui/List":303,"material-ui/RaisedButton":314,"material-ui/Tabs":340,"material-ui/TextField":346,"material-ui/Toggle":348,"node-uuid":397,"ramda":414,"react":583,"react-redux":423}],656:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -94620,6 +94611,83 @@ exports.default = (0, _reactRedux.connect)(function (state) {
 })(Sessions);
 
 },{"../action_creators":630,"../components/add_icon":632,"material-ui/Table":335,"react":583,"react-redux":423}],657:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _react = require('react');
+
+var _react2 = _interopRequireDefault(_react);
+
+var _reactRedux = require('react-redux');
+
+var _nodeUuid = require('node-uuid');
+
+var _nodeUuid2 = _interopRequireDefault(_nodeUuid);
+
+var _RaisedButton = require('material-ui/RaisedButton');
+
+var _RaisedButton2 = _interopRequireDefault(_RaisedButton);
+
+var _action_creators = require('../action_creators');
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var styles = {
+    button: {
+        margin: 12
+    },
+    exampleImageInput: {
+        cursor: 'pointer',
+        position: 'absolute',
+        top: 0,
+        bottom: 0,
+        right: 0,
+        left: 0,
+        width: '100%',
+        opacity: 0
+    },
+    toggle: {
+        marginBottom: 16
+    }
+};
+
+var UploadFile = function UploadFile(_ref) {
+    var dispatch = _ref.dispatch;
+    var user = _ref.user;
+    var afterUpload = _ref.afterUpload;
+
+    return _react2.default.createElement(
+        _RaisedButton2.default,
+        { label: 'Attach File', labelPosition: 'before', style: styles.button },
+        _react2.default.createElement('input', { type: 'file', style: styles.exampleImageInput,
+            onChange: function onChange(e) {
+                var file = e.target.files[0];
+                var _attachments = {};
+                _attachments[file.name] = {
+                    'content_type': file.type,
+                    data: file
+                };
+                var fileObj = {
+                    _id: "file_" + _nodeUuid2.default.v1(),
+                    type: "file",
+                    user: user,
+                    name: file.name,
+                    content_type: file.type,
+                    _attachments: _attachments
+                };
+
+                dispatch((0, _action_creators.insertFile)(fileObj));
+                afterUpload(fileObj._id);
+            } })
+    );
+};
+
+exports.default = (0, _reactRedux.connect)()(UploadFile);
+
+},{"../action_creators":630,"material-ui/RaisedButton":314,"node-uuid":397,"react":583,"react-redux":423}],658:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -94742,7 +94810,7 @@ var Login = _react2.default.createClass({
 
 exports.default = Login;
 
-},{"material-ui/RaisedButton":314,"material-ui/TextField":346,"react":583}],658:[function(require,module,exports){
+},{"material-ui/RaisedButton":314,"material-ui/TextField":346,"react":583}],659:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -94904,7 +94972,7 @@ function courses() {
 }
 
 function history() {
-  var state = arguments.length <= 0 || arguments[0] === undefined ? [{ name: routeNames.HOME }] : arguments[0];
+  var state = arguments.length <= 0 || arguments[0] === undefined ? [{ name: routeNames.SESSIONS }] : arguments[0];
   var action = arguments[1];
 
   switch (action.type) {
@@ -94913,7 +94981,7 @@ function history() {
     case types.GO_BACK:
       return state.length > 1 ? state.slice(1) : state;
     case types.RESET_ROUTE:
-      return [{ name: routeNames.HOME }];
+      return [{ name: routeNames.SESSIONS }];
     default:
       return state;
   }
@@ -94930,7 +94998,7 @@ exports.default = (0, _redux.combineReducers)({
   history: history
 });
 
-},{"./constants/ActionTypes":639,"./constants/routeNames":640,"redux":610}],659:[function(require,module,exports){
+},{"./constants/ActionTypes":639,"./constants/routeNames":640,"redux":610}],660:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -95177,4 +95245,4 @@ function createAppStore(user) {
 
 exports.default = createAppStore;
 
-},{"./constants/ActionTypes":639,"./constants/routeNames":640,"./reducer":658,"pouch-redux-middleware":404,"pouchdb/dist/pouchdb":405,"redux":610}]},{},[631]);
+},{"./constants/ActionTypes":639,"./constants/routeNames":640,"./reducer":659,"pouch-redux-middleware":404,"pouchdb/dist/pouchdb":405,"redux":610}]},{},[631]);

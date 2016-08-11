@@ -94,14 +94,14 @@ function courses(state=[], action){
   }
 }
 
-function history(state=[{name : routeNames.HOME}], action){
+function history(state=[{name : routeNames.SESSIONS}], action){
   switch (action.type) {
     case types.NAVIGATE_TO:
       return [action.route, ...state]
     case types.GO_BACK:
       return state.length > 1 ? state.slice(1) : state;
     case types.RESET_ROUTE:
-      return [{name : routeNames.HOME}];
+      return [{name : routeNames.SESSIONS}];
     default:
       return state
   }
