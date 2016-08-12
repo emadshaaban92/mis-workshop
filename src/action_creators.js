@@ -256,6 +256,16 @@ export const addQuestionToSession = (question_id, session)=> {
     }
 }
 
+export const addQuestionToSessionAssignment = (question_id, session)=> {
+    return {
+        type: types.UPDATE_SESSION,
+        session: {
+            ...session,
+            assignment: [...session.assignment, {id: question_id, public: false}]
+        }
+    }
+}
+
 export const addFileToSession = (file, session)=> {
     return {
         type: types.UPDATE_SESSION,

@@ -99,7 +99,7 @@ const QuestionView = React.createClass({
                 <div>
                     <h3>The Attached File : {this.renderAttachment()}</h3>
                 </div>
-                <UploadFile user="user" afterUpload={(file)=>{
+                <UploadFile afterUpload={(file)=>{
                     const value = {
                         id: file._id,
                         name: file.name,

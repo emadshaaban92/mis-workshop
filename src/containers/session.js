@@ -20,7 +20,7 @@ import Question from './question';
 
 import UploadFile from './upload_file';
 
-import {addQuizToSession, addQuestionToSession, updateSession,
+import {addQuizToSession, addQuestionToSession, addQuestionToSessionAssignment, updateSession,
     insertMessage, insertFile, addFileToSession, sessionStartLive, sessionStopLive} from '../action_creators';
 
 const styles = {
@@ -57,6 +57,7 @@ const Session = React.createClass({
         return {
             selected_quiz: undefined,
             selected_question: undefined,
+            selected_question_assignment: undefined,
             new_message: this.getNewMessage()
         }
     },
@@ -80,6 +81,11 @@ const Session = React.createClass({
     renderSelectedQuestion: function(){
         if(this.state.selected_question){
             return <Question disabled={true} question_id={this.state.selected_question} />
+        }
+    },
+    renderSelectedQuestionAssignment: function(){
+        if(this.state.selected_question_assignment){
+            return <Question question_id={this.state.selected_question_assignment} />
         }
     },
     renderLiveQuizButton: function(){
@@ -150,20 +156,6 @@ const Session = React.createClass({
             </div>
         )
     },
-    // getAttachments: function(){
-    //     const {session} = this.props;
-    //     if(session._attachments){
-    //         const names = R.keys(session._attachments);
-    //         const files = names.map((name)=>{
-    //             return {
-    //                 name,
-    //                 url: 'https://couch.bizzotech.com/mis_workshop_v1/' + localStorage.getItem('dbName') + '/' + session._id + '/' + name
-    //             }
-    //         })
-    //         return files;
-    //     }
-    //     return [];
-    // },
     getAttachments: function(){
         const {files} = this.props.session;
         return files.map((file)=>{
@@ -185,7 +177,10 @@ const Session = React.createClass({
         })
     },
     renderForAuthor: function(){
-        const {session, quizes, questions, messages, files, dispatch} = this.props;
+        const {session, quizes, questions, assignment_questions, messages, files, dispatch} = this.props;
+        const {selected_quiz, selected_question, selected_question_assignment} = this.state;
+        const selected_question_assignment_obj = session.assignment.find((q)=>{return q.id === selected_question_assignment});
+        const selected_question_assignment_index = session.assignment.indexOf(selected_question_assignment_obj);
         return(
             <div style={{width: '100%'}}>
                 <h1>{session.title}</h1>
@@ -256,8 +251,40 @@ const Session = React.createClass({
                               </div>
                           </div>
                       </Tab>
+                      <Tab label="Assignment" >
+                          <AddQuestion afterInsert={(question_id)=>{
+                              dispatch(addQuestionToSessionAssignment(question_id, session));
+                          }}/>
+                          <br />
+                          <div style={{width : '100%', display: 'flex', flexDirection: 'row'}}>
+                              <div style={{width: '30%'}}>
+                                  <List>
+                                    {assignment_questions.map((question)=>{
+                                        return <ListItem key={question._id} primaryText={question.title} onClick={()=>{
+                                                this.setState({selected_question_assignment: question._id})
+                                            }} />
+                                    })}
+                                  </List>
+                              </div>
+                              <div style={{width: '70%'}}>
+                                  <div style={{width: '100%'}}>
+                                      {this.renderSelectedQuestionAssignment()}
+                                      <br />
+                                      {selected_question_assignment_obj ? <Toggle label="Public" style={styles.toggle}
+                                          defaultToggled={selected_question_assignment_obj.public} onToggle={()=>{
+                                              const i = selected_question_assignment_index;
+                                              dispatch(updateSession({
+                                                  ...session,
+                                                  assignment: R.update(i, {...session.assignment[i], public: !selected_question_assignment_obj.public}, session.assignment)
+                                              }))
+                                          }}
+                                      /> : null}
+                                  </div>
+                              </div>
+                          </div>
+                      </Tab>
                       <Tab label="Files" >
-                        <UploadFile user="public" afterUpload={(file)=>{
+                        <UploadFile afterUpload={(file)=>{
                             dispatch(addFileToSession(file, this.props.session));
                         }}/>
                         <br/>
@@ -339,6 +366,22 @@ const Session = React.createClass({
                               </div>
                           </div>
                       </Tab>
+                      <Tab label="Assignment" >
+                          <div style={{width : '100%', display: 'flex', flexDirection: 'row'}}>
+                              <div style={{width: '30%'}}>
+                                  <List>
+                                    {this.props.public_assignment_questions.map((question)=>{
+                                        return <ListItem key={question._id} primaryText={question.title} onClick={()=>{
+                                                this.setState({selected_question_assignment: question._id})
+                                            }} />
+                                    })}
+                                  </List>
+                              </div>
+                              <div style={{width: '70%'}}>
+                                  {this.renderSelectedQuestionAssignment()}
+                              </div>
+                          </div>
+                      </Tab>
                       <Tab label="Files" >
                           {this.getPublicAttachments().map((file, i)=>{
                               return(
@@ -384,6 +427,14 @@ export default connect((state, {session_id})=>{
     }).map((question)=>{
         return state.questions.find((q)=> { return question.id === q._id});
     });
+    const assignment_questions = session.assignment.map((question)=>{
+        return state.questions.find((q)=> { return question.id === q._id});
+    });
+    const public_assignment_questions = session.assignment.filter((question)=>{
+        return question.public;
+    }).map((question)=>{
+        return state.questions.find((q)=> { return question.id === q._id});
+    });
     const live_quiz = session.quizes.find((quiz)=>{return quiz.live});
     const live_question = session.questions.find((question)=>{return question.live});
     return {
@@ -394,6 +445,8 @@ export default connect((state, {session_id})=>{
         public_quizes,
         questions,
         public_questions,
+        assignment_questions,
+        public_assignment_questions,
         live_quiz,
         live_question
     }

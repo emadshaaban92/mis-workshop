@@ -18,6 +18,7 @@ const AddSession = React.createClass({
                 discussions: [],
                 quizes: [],
                 questions: [],
+                assignment:[],
                 files: [],
                 live: false,
                 public: false

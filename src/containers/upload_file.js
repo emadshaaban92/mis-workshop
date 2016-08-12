@@ -9,7 +9,7 @@ import {insertFile} from '../action_creators';
 
 const UploadFile = React.createClass({
     upload: function(){
-        const {dispatch, user, afterUpload} = this.props;
+        const {dispatch, afterUpload} = this.props;
         const file = this.refs.file.files[0];
         const _attachments = {};
         _attachments[file.name] = {
@@ -17,9 +17,9 @@ const UploadFile = React.createClass({
             data: file
         }
         const fileObj = {
-            _id : "file_" + uuid.v1(),
+            _id : file.name + uuid.v1(),
             type: "file",
-            user,
+            user: localStorage.getItem('username'),
             name : file.name,
             content_type: file.type,
             _attachments

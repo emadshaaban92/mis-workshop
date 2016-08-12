@@ -13,6 +13,8 @@ import AppReducer from './reducer';
 function createAppStore(user){
   const localDB = new PouchDB(user.dbName);
 
+  const localFilesDB = new PouchDB(user.dbName + '_files');
+
   const pouchMiddleware = PouchMiddleware([{
       path: '/questions',
       db: localDB,
@@ -75,7 +77,7 @@ function createAppStore(user){
       }
   }, {
       path: '/files',
-      db: localDB,
+      db: localFilesDB,
       actions: {
           remove: doc => AppStore.dispatch({
               type: types.REMOVE_FILE,
@@ -166,7 +168,7 @@ function createAppStore(user){
 
   const remoteDB = new PouchDB('https://' + user.username + ':' + user.password +'@couch.bizzotech.com/mis_workshop_v1/' + user.dbName);
 
-
+  const remoteFilesDB = new PouchDB('https://' + user.username + ':' + user.password +'@couch.bizzotech.com/mis_workshop_v1/mis-files');
 
   localDB.sync(remoteDB, {
       live: true,
@@ -187,6 +189,27 @@ function createAppStore(user){
       });
   }).on('error', function(err) {
       console.log("totally unhandled error (shouldn't happen)");
+  });
+
+  localFilesDB.replicate.to(remoteFilesDB, {
+      live: true,
+      retry: true
+  }).on('change', function(change) {
+      //console.log(change);
+      console.log('yo, something changed! -> Files');
+
+  }).on('paused', function(info) {
+      console.log("replication was paused, usually because of a lost connection -> Files");
+      AppStore.dispatch({
+          type: types.HIDE_LOADING
+      });
+  }).on('active', function(info) {
+      console.log("replication was resumed -> Files");
+      AppStore.dispatch({
+          type: types.SHOW_LOADING
+      });
+  }).on('error', function(err) {
+      console.log("totally unhandled error (shouldn't happen) -> Files");
   });
 
   return AppStore;

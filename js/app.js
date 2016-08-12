@@ -91054,7 +91054,7 @@ function extend() {
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.insertFile = exports.insertMessage = exports.addFileToSession = exports.addQuestionToSession = exports.addQuizToSession = exports.navigateToAddSession = exports.navigateToSession = exports.navigateToEditQuiz = exports.navigateToAddQuiz = exports.navigateToQuiz = exports.navigateToEditQuestion = exports.navigateToAddQuestion = exports.navigateToQuestion = exports.resetRoute = exports.navigateToLiveSession = exports.navigateToLiveQuiz = exports.navigateToSessions = exports.navigateToQuestions = exports.navtigateToQuizes = exports.sessionStopLive = exports.sessionStartLive = exports.updateSession = exports.insertSession = exports.quizStopLive = exports.quizToggleLive = exports.updateQuiz = exports.insertQuiz = exports.upsertAnswer = exports.updateAnswer = exports.insertAnswer = exports.updateQuestion = exports.insertQuestion = undefined;
+exports.insertFile = exports.insertMessage = exports.addFileToSession = exports.addQuestionToSessionAssignment = exports.addQuestionToSession = exports.addQuizToSession = exports.navigateToAddSession = exports.navigateToSession = exports.navigateToEditQuiz = exports.navigateToAddQuiz = exports.navigateToQuiz = exports.navigateToEditQuestion = exports.navigateToAddQuestion = exports.navigateToQuestion = exports.resetRoute = exports.navigateToLiveSession = exports.navigateToLiveQuiz = exports.navigateToSessions = exports.navigateToQuestions = exports.navtigateToQuizes = exports.sessionStopLive = exports.sessionStartLive = exports.updateSession = exports.insertSession = exports.quizStopLive = exports.quizToggleLive = exports.updateQuiz = exports.insertQuiz = exports.upsertAnswer = exports.updateAnswer = exports.insertAnswer = exports.updateQuestion = exports.insertQuestion = undefined;
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
@@ -91314,6 +91314,15 @@ var addQuestionToSession = exports.addQuestionToSession = function addQuestionTo
         type: types.UPDATE_SESSION,
         session: _extends({}, session, {
             questions: [].concat(_toConsumableArray(session.questions), [{ id: question_id, live: false, public: false }])
+        })
+    };
+};
+
+var addQuestionToSessionAssignment = exports.addQuestionToSessionAssignment = function addQuestionToSessionAssignment(question_id, session) {
+    return {
+        type: types.UPDATE_SESSION,
+        session: _extends({}, session, {
+            assignment: [].concat(_toConsumableArray(session.assignment), [{ id: question_id, public: false }])
         })
     };
 };
@@ -91828,7 +91837,7 @@ var QuestionView = _react2.default.createClass({
                     this.renderAttachment()
                 )
             ),
-            _react2.default.createElement(_upload_file2.default, { user: 'user', afterUpload: function afterUpload(file) {
+            _react2.default.createElement(_upload_file2.default, { afterUpload: function afterUpload(file) {
                     var value = {
                         id: file._id,
                         name: file.name,
@@ -92871,6 +92880,7 @@ var AddSession = _react2.default.createClass({
                 discussions: [],
                 quizes: [],
                 questions: [],
+                assignment: [],
                 files: [],
                 live: false,
                 public: false
@@ -94283,6 +94293,7 @@ var Session = _react2.default.createClass({
         return {
             selected_quiz: undefined,
             selected_question: undefined,
+            selected_question_assignment: undefined,
             new_message: this.getNewMessage()
         };
     },
@@ -94308,6 +94319,11 @@ var Session = _react2.default.createClass({
     renderSelectedQuestion: function renderSelectedQuestion() {
         if (this.state.selected_question) {
             return _react2.default.createElement(_question2.default, { disabled: true, question_id: this.state.selected_question });
+        }
+    },
+    renderSelectedQuestionAssignment: function renderSelectedQuestionAssignment() {
+        if (this.state.selected_question_assignment) {
+            return _react2.default.createElement(_question2.default, { question_id: this.state.selected_question_assignment });
         }
     },
     renderLiveQuizButton: function renderLiveQuizButton() {
@@ -94419,20 +94435,6 @@ var Session = _react2.default.createClass({
             )
         );
     },
-    // getAttachments: function(){
-    //     const {session} = this.props;
-    //     if(session._attachments){
-    //         const names = R.keys(session._attachments);
-    //         const files = names.map((name)=>{
-    //             return {
-    //                 name,
-    //                 url: 'https://couch.bizzotech.com/mis_workshop_v1/' + localStorage.getItem('dbName') + '/' + session._id + '/' + name
-    //             }
-    //         })
-    //         return files;
-    //     }
-    //     return [];
-    // },
     getAttachments: function getAttachments() {
         var files = this.props.session.files;
 
@@ -94462,10 +94464,19 @@ var Session = _react2.default.createClass({
         var session = _props.session;
         var quizes = _props.quizes;
         var questions = _props.questions;
+        var assignment_questions = _props.assignment_questions;
         var messages = _props.messages;
         var files = _props.files;
         var dispatch = _props.dispatch;
+        var _state = this.state;
+        var selected_quiz = _state.selected_quiz;
+        var selected_question = _state.selected_question;
+        var selected_question_assignment = _state.selected_question_assignment;
 
+        var selected_question_assignment_obj = session.assignment.find(function (q) {
+            return q.id === selected_question_assignment;
+        });
+        var selected_question_assignment_index = session.assignment.indexOf(selected_question_assignment_obj);
         return _react2.default.createElement(
             'div',
             { style: { width: '100%' } },
@@ -94571,8 +94582,51 @@ var Session = _react2.default.createClass({
                     ),
                     _react2.default.createElement(
                         _Tabs.Tab,
+                        { label: 'Assignment' },
+                        _react2.default.createElement(_add_question2.default, { afterInsert: function afterInsert(question_id) {
+                                dispatch((0, _action_creators.addQuestionToSessionAssignment)(question_id, session));
+                            } }),
+                        _react2.default.createElement('br', null),
+                        _react2.default.createElement(
+                            'div',
+                            { style: { width: '100%', display: 'flex', flexDirection: 'row' } },
+                            _react2.default.createElement(
+                                'div',
+                                { style: { width: '30%' } },
+                                _react2.default.createElement(
+                                    _List.List,
+                                    null,
+                                    assignment_questions.map(function (question) {
+                                        return _react2.default.createElement(_List.ListItem, { key: question._id, primaryText: question.title, onClick: function onClick() {
+                                                _this5.setState({ selected_question_assignment: question._id });
+                                            } });
+                                    })
+                                )
+                            ),
+                            _react2.default.createElement(
+                                'div',
+                                { style: { width: '70%' } },
+                                _react2.default.createElement(
+                                    'div',
+                                    { style: { width: '100%' } },
+                                    this.renderSelectedQuestionAssignment(),
+                                    _react2.default.createElement('br', null),
+                                    selected_question_assignment_obj ? _react2.default.createElement(_Toggle2.default, { label: 'Public', style: styles.toggle,
+                                        defaultToggled: selected_question_assignment_obj.public, onToggle: function onToggle() {
+                                            var i = selected_question_assignment_index;
+                                            dispatch((0, _action_creators.updateSession)(_extends({}, session, {
+                                                assignment: _ramda2.default.update(i, _extends({}, session.assignment[i], { public: !selected_question_assignment_obj.public }), session.assignment)
+                                            })));
+                                        }
+                                    }) : null
+                                )
+                            )
+                        )
+                    ),
+                    _react2.default.createElement(
+                        _Tabs.Tab,
                         { label: 'Files' },
-                        _react2.default.createElement(_upload_file2.default, { user: 'public', afterUpload: function afterUpload(file) {
+                        _react2.default.createElement(_upload_file2.default, { afterUpload: function afterUpload(file) {
                                 dispatch((0, _action_creators.addFileToSession)(file, _this5.props.session));
                             } }),
                         _react2.default.createElement('br', null),
@@ -94699,6 +94753,32 @@ var Session = _react2.default.createClass({
                     ),
                     _react2.default.createElement(
                         _Tabs.Tab,
+                        { label: 'Assignment' },
+                        _react2.default.createElement(
+                            'div',
+                            { style: { width: '100%', display: 'flex', flexDirection: 'row' } },
+                            _react2.default.createElement(
+                                'div',
+                                { style: { width: '30%' } },
+                                _react2.default.createElement(
+                                    _List.List,
+                                    null,
+                                    this.props.public_assignment_questions.map(function (question) {
+                                        return _react2.default.createElement(_List.ListItem, { key: question._id, primaryText: question.title, onClick: function onClick() {
+                                                _this6.setState({ selected_question_assignment: question._id });
+                                            } });
+                                    })
+                                )
+                            ),
+                            _react2.default.createElement(
+                                'div',
+                                { style: { width: '70%' } },
+                                this.renderSelectedQuestionAssignment()
+                            )
+                        )
+                    ),
+                    _react2.default.createElement(
+                        _Tabs.Tab,
                         { label: 'Files' },
                         this.getPublicAttachments().map(function (file, i) {
                             return _react2.default.createElement(
@@ -94760,6 +94840,18 @@ exports.default = (0, _reactRedux.connect)(function (state, _ref) {
             return question.id === q._id;
         });
     });
+    var assignment_questions = session.assignment.map(function (question) {
+        return state.questions.find(function (q) {
+            return question.id === q._id;
+        });
+    });
+    var public_assignment_questions = session.assignment.filter(function (question) {
+        return question.public;
+    }).map(function (question) {
+        return state.questions.find(function (q) {
+            return question.id === q._id;
+        });
+    });
     var live_quiz = session.quizes.find(function (quiz) {
         return quiz.live;
     });
@@ -94774,6 +94866,8 @@ exports.default = (0, _reactRedux.connect)(function (state, _ref) {
         public_quizes: public_quizes,
         questions: questions,
         public_questions: public_questions,
+        assignment_questions: assignment_questions,
+        public_assignment_questions: public_assignment_questions,
         live_quiz: live_quiz,
         live_question: live_question
     };
@@ -94917,7 +95011,6 @@ var UploadFile = _react2.default.createClass({
     upload: function upload() {
         var _props = this.props;
         var dispatch = _props.dispatch;
-        var user = _props.user;
         var afterUpload = _props.afterUpload;
 
         var file = this.refs.file.files[0];
@@ -94927,9 +95020,9 @@ var UploadFile = _react2.default.createClass({
             data: file
         };
         var fileObj = {
-            _id: "file_" + _nodeUuid2.default.v1(),
+            _id: file.name + _nodeUuid2.default.v1(),
             type: "file",
-            user: user,
+            user: localStorage.getItem('username'),
             name: file.name,
             content_type: file.type,
             _attachments: _attachments
@@ -95321,6 +95414,8 @@ var PouchDB = require('pouchdb/dist/pouchdb');
 function createAppStore(user) {
     var localDB = new PouchDB(user.dbName);
 
+    var localFilesDB = new PouchDB(user.dbName + '_files');
+
     var pouchMiddleware = (0, _pouchReduxMiddleware2.default)([{
         path: '/questions',
         db: localDB,
@@ -95401,7 +95496,7 @@ function createAppStore(user) {
         }
     }, {
         path: '/files',
-        db: localDB,
+        db: localFilesDB,
         actions: {
             remove: function remove(doc) {
                 return AppStore.dispatch({
@@ -95515,6 +95610,8 @@ function createAppStore(user) {
 
     var remoteDB = new PouchDB('https://' + user.username + ':' + user.password + '@couch.bizzotech.com/mis_workshop_v1/' + user.dbName);
 
+    var remoteFilesDB = new PouchDB('https://' + user.username + ':' + user.password + '@couch.bizzotech.com/mis_workshop_v1/mis-files');
+
     localDB.sync(remoteDB, {
         live: true,
         retry: true
@@ -95533,6 +95630,26 @@ function createAppStore(user) {
         });
     }).on('error', function (err) {
         console.log("totally unhandled error (shouldn't happen)");
+    });
+
+    localFilesDB.replicate.to(remoteFilesDB, {
+        live: true,
+        retry: true
+    }).on('change', function (change) {
+        //console.log(change);
+        console.log('yo, something changed! -> Files');
+    }).on('paused', function (info) {
+        console.log("replication was paused, usually because of a lost connection -> Files");
+        AppStore.dispatch({
+            type: types.HIDE_LOADING
+        });
+    }).on('active', function (info) {
+        console.log("replication was resumed -> Files");
+        AppStore.dispatch({
+            type: types.SHOW_LOADING
+        });
+    }).on('error', function (err) {
+        console.log("totally unhandled error (shouldn't happen) -> Files");
     });
 
     return AppStore;
