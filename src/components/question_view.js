@@ -9,7 +9,6 @@ import Checkbox from 'material-ui/Checkbox';
 import renderHTML from 'react-render-html';
 var ReactQuill = require('react-quill');
 
-
 import UploadFile from '../containers/upload_file';
 
 
@@ -83,7 +82,7 @@ const QuestionView = React.createClass({
         const file = this.getAttachment();
         if(file){
             return (
-                <a href={file.url}>{file.name}</a>
+                <a href={file.url} target="_blank">{file.name}</a>
             )
         }
     },

@@ -114749,7 +114749,7 @@ var QuestionView = _react2.default.createClass({
         if (file) {
             return _react2.default.createElement(
                 'a',
-                { href: file.url },
+                { href: file.url, target: '_blank' },
                 file.name
             );
         }
@@ -117597,7 +117597,7 @@ var Session = _react2.default.createClass({
                                 { key: i },
                                 _react2.default.createElement(
                                     'a',
-                                    { href: file.url },
+                                    { href: file.url, target: '_blank' },
                                     file.name
                                 ),
                                 ' ',
@@ -117747,7 +117747,7 @@ var Session = _react2.default.createClass({
                                 { key: i },
                                 _react2.default.createElement(
                                     'a',
-                                    { href: file.url },
+                                    { href: file.url, target: '_blank' },
                                     file.name
                                 )
                             );

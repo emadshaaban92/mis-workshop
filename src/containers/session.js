@@ -23,6 +23,7 @@ import UploadFile from './upload_file';
 import {addQuizToSession, addQuestionToSession, addQuestionToSessionAssignment, updateSession,
     insertMessage, insertFile, addFileToSession, sessionStartLive, sessionStopLive} from '../action_creators';
 
+
 const styles = {
   button: {
     margin: 12,
@@ -291,7 +292,7 @@ const Session = React.createClass({
                         {this.getAttachments().map((file, i)=>{
                             return(
                                 <div key={i}>
-                                    <a href={file.url}>{file.name}</a> <a onClick={()=>{
+                                    <a href={file.url} target="_blank">{file.name}</a> <a onClick={()=>{
                                         const files = session.files.filter((f)=>{
                                             return file.id !== f.id;
                                         });
@@ -386,7 +387,7 @@ const Session = React.createClass({
                           {this.getPublicAttachments().map((file, i)=>{
                               return(
                                   <div key={i}>
-                                      <a href={file.url}>{file.name}</a>
+                                      <a href={file.url} target="_blank">{file.name}</a>
                                   </div>
                               )
                           })}
