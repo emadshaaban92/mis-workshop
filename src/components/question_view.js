@@ -6,7 +6,13 @@ import TextField from 'material-ui/TextField';
 import RaisedButton from 'material-ui/RaisedButton';
 import Checkbox from 'material-ui/Checkbox';
 
+import renderHTML from 'react-render-html';
+var ReactQuill = require('react-quill');
+
+
 import UploadFile from '../containers/upload_file';
+
+
 
 const styles = {
   button: {
@@ -135,15 +141,21 @@ const QuestionView = React.createClass({
     },
     renderEssay: function(){
         const {answer} = this.state;
+        if(this.props.disabled || answer.submited){
+            return (
+                <div>
+                    {renderHTML(answer.value)}
+                </div>
+            )
+        }
         return(
             <div>
                 <h3>Write your answer :</h3>
-                <TextField value={answer.value} name={"answer_essay"}
-                    style={{width: '100%'}}
-                    multiLine={true} rows={6} disabled={this.props.disabled || answer.submited}
-                  onChange={(e, value)=>{
-                    this.setState({answer : {...answer, value}});
-                  }}/>
+                  <ReactQuill theme="snow" value={answer.value}
+                      onChange={(value)=>{
+                          this.setState({answer : {...answer, value}});
+                      }}
+                    />
             </div>
 
         )
@@ -180,9 +192,9 @@ const QuestionView = React.createClass({
     render: function(){
         const {question} = this.props;
         return (
-          <div  style={{width: '80%'}}>
+          <div  style={{width: '100%'}}>
             <h1>{question.title}</h1>
-            <h3>{question.text}</h3>
+            <h3>{renderHTML(question.text)}</h3>
 
             <br />
             <div style={{display: 'flex', flexDirection: 'row'}}>

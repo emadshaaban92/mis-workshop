@@ -57,7 +57,7 @@ const Question = React.createClass({
         const {question} = this.props;
         const {answer} = this.state;
         return (
-            <div style={{width: '80%'}}>
+            <div style={{width: '100%'}}>
                 <QuestionView disabled={this.props.disabled} question={question} answer={answer}
                     onChange={(answer)=> {this.setState({answer})}} />
                 <RaisedButton label="Save" primary={true} disabled={this.props.disabled || answer.submited || !answer.value}

@@ -7,6 +7,9 @@ import RaisedButton from 'material-ui/RaisedButton';
 import SelectField from 'material-ui/SelectField';
 import MenuItem from 'material-ui/MenuItem';
 
+
+var ReactQuill = require('react-quill');
+
 const QuestionFormInput = (props) => {
     const {form, label, name} = props;
     return (
@@ -75,6 +78,12 @@ const QuestionForm = React.createClass({
         }
     },
     render: function(){
+        var editorStyle = {
+            overflow: 'auto',
+            width: 300,
+            height: 100,
+            maxHeight: 100
+        }
         const {question} = this.state;
         return (
             <div>
@@ -88,8 +97,16 @@ const QuestionForm = React.createClass({
                   <MenuItem value={'attach'} primaryText="Attach" />
                 </SelectField>
                 <br />
-              <QuestionFormInput form={this} label="Text" name="text" multiLine={true} rows={2} />
 
+            <QuestionFormInput form={this} label="Text" name="text" multiLine={true} rows={2} />
+
+            <ReactQuill theme="snow"
+                value={this.state.question.text}
+                onChange={(text)=>{
+                    const question = {...this.state.question, text};
+                    this.setState({question});
+                }}
+              />
               <br />
 
               {this.renderBody()}
